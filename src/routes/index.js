@@ -4,8 +4,8 @@ import { upload } from "../middlewares/MulterMiddleWare.js";
 const router = express.Router();
 
 router.get("/user", UserController.get);
-router.post("/user", upload.single("Images"), UserController.create);
-router.patch("/user/:id", upload.single("Images"), UserController.update);
+router.post("/user", upload.single("Avatar"), UserController.create);
+router.patch("/user/:id", upload.single("Avatar"), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
 
 export default router;

@@ -17,7 +17,7 @@ export const UserController = {
             .then(result => {
               const formData = {
                 ...body,
-                Images: result.data.webContentLink
+                Avatar: result.data.webContentLink
               }
               const courses = new UserSchema(formData)
               courses.save()
@@ -49,7 +49,7 @@ export const UserController = {
             .then(result => {
               const formData = {
                 ...body,
-                Images: result.data.webContentLink
+                Avatar: result.data.webContentLink
               }
               UserSchema.updateOne({ _id: req.params.id }, formData)
                 .then(() => res.redirect('/'))

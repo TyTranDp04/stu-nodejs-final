@@ -8,7 +8,7 @@ const DropSchemaUser = new mongoose.Schema({
     RoleId:{
         type:String
     },
-    Images: {
+    Avatar: {
         type:String
     },
     Name: {
