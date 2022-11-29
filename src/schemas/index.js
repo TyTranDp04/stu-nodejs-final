@@ -1,0 +1,1 @@
+export {DpRoleSchema} from "./TableRole.schemas.js"
