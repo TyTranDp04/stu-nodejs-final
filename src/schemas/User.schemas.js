@@ -6,19 +6,24 @@ mongoose.Promise = global.Promise;
 
 const DropSchemaUser = new mongoose.Schema({
     RoleId:{
-        type:String
+        type:String,
+        require: true,
     },
     Avatar: {
-        type:String
+        type:String,
+        require: true,
     },
     Name: {
-        type:String
+        type:String,
+        require: true,
     },
     Gmail: {
-        type:String
+        type:String,
+        require: true,
     },
     Password: {
-        type:String
+        type:String,
+        require: true,
     },
 
 }, {timestamps:true});
