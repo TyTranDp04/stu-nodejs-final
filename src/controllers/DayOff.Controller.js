@@ -1,4 +1,5 @@
-import { TableDayOffSchema } from '../schemas/TableDayOff.Schemas.js'
+import { TableDayOffSchema } from '../schemas/TableDayOff.schemas.js'
+import { UserSchema } from '../schemas/User.schemas.js';
 import { Helper } from '../helper/index.js';
 import axios from 'axios';
 export const DayOffController = {
@@ -50,11 +51,24 @@ export const DayOffController = {
   upload(req, res, next) {
     const { body, file } = req
     console.log(body, file)
-    const courses = new TableDayOffSchema(body)
-    console.log(courses)
+    const formData = {
+      ...body,
+     Status: 1
+    }
+    const courses = new TableDayOffSchema(formData)
     courses.save()
-    
+    UserSchema.findById({ _id: req.params.id })
       .then((data) => {
+        axios.post('https://hooks.slack.com/services/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', {
+          "blocks": [
+            {
+              "type": "section",
+              text: {
+                type: "mrkdwn",
+                text: `Name: *${data.Name}*\n\n Dayoff_from: *${body.DayOffFrom}*\n\n Dayoff_to: *${body.DayOffFrom}*\n\n Reason: *${body.Reason}*\n\n Link Website: *${body.DayOffFrom}*`
+              }
+            }]
+        })
         Helper.responseJsonHandler(data, null, res)
       }).catch((error) => {
         Helper.responseJsonHandler(null, error, res)
@@ -89,6 +103,7 @@ export const DayOffController = {
         idAprove.push(body.userId)
         TableDayOffSchema.updateOne({ _id: body.id }, { Approve: idAprove })
           .then((data) => {
+
             Helper.responseJsonHandler(data, null, res)
 
           }).catch((error) => {

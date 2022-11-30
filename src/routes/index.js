@@ -1,5 +1,5 @@
 import express from "express";
-import { DayOffController } from "../controllers/DayOff.Controller.js";
+import { DayOffController } from "../controllers/DayOff.controller.js";
 import { UserController } from "../controllers/User.controllers.js";
 import { upload } from "../middlewares/MulterMiddleWare.js";
 import { DpRoleController } from "../controllers/Role.controllers.js";
@@ -12,7 +12,7 @@ router.patch("/user/:id", upload.single("Avatar"), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
 
 router.get('/dayoff', DayOffController.show);
-router.post('/dayoff', DayOffController.upload);
+router.post('/dayoff/:id', DayOffController.upload);
 router.get('/dayoff-soft', DayOffController.getDeleted);
 router.delete('/dayoff-soft/:id', DayOffController.softDelete);
 router.patch('/dayoff-soft/:id', DayOffController.restore);

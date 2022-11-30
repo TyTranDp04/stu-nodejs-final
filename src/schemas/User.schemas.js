@@ -25,6 +25,10 @@ const DropSchemaUser = new mongoose.Schema({
         type:String,
         require: true,
     },
+    FileGroup: {
+        type:Array,
+        require: true,
+    },
 
 }, {timestamps:true});
 
