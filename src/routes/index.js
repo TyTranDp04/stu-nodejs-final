@@ -3,6 +3,8 @@ import { DayOffController } from "../controllers/DayOff.controller.js";
 import { UserController } from "../controllers/User.controllers.js";
 import { upload } from "../middlewares/MulterMiddleWare.js";
 import { DpRoleController } from "../controllers/Role.controllers.js";
+import {GroupController} from '../controllers/Group.controllers.js'
+import {UserGroupController} from '../controllers/UserGroup.controllers.js'
 
 const router = express.Router();
 
@@ -29,5 +31,15 @@ router.get("/role", DpRoleController.get);
 router.post("/role", DpRoleController.create);
 router.patch("/role/:id", DpRoleController.update);
 router.delete("/role/:id", DpRoleController.delete);
+
+router.get("/user-group", UserGroupController.get);
+router.post("/user-group", UserGroupController.create);
+router.patch("/user-group/:id", UserGroupController.update);
+router.delete("/user-group/:id", UserGroupController.getDelete);
+
+router.get("/group", GroupController.get);
+router.post("/group", GroupController.create);
+router.patch("/group/:id", GroupController.update);
+router.delete("/group/:id", GroupController.getDelete);
 
 export default router;
