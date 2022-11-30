@@ -4,28 +4,6 @@ import jwt from "jsonwebtoken";
 
 
 export const authController = {
-  // REGISTER
-  registerUser: async (req, res) => {
-    try {
-      const salt = await bcrypt.genSalt(10);
-      const hashed = await bcrypt.hash(req.body.Password, salt);
-
-      //Create new user
-      const newUser = await new UserSchema({
-        Name: req.body.Name,
-        Gmail: req.body.Gmail,
-        Password: req.body.Password,
-        RoleID : req.body.RoleID,
-        Avatar : req.body.Avatar,
-        // password: req.body.password,
-      });
-      //Save user to DB
-      const user = await newUser.save();
-      res.status(200).json(user);
-    } catch (err) {
-      res.status(500).json(err);
-    }
-  },
 
   //Function
   generateAccessToken: (user) => {
