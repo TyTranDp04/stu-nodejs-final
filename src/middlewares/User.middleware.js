@@ -1,7 +1,7 @@
 import { auth } from 'google-auth-library';
 import jwt from 'jsonwebtoken'
 
-export const middlewareController = {
+export const Usermiddleware = {
   verifyToken: (req, res, next) => {
     try {
       const token = req.headers.authorization.replace('Bearer','').trim();
