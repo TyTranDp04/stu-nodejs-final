@@ -4,6 +4,10 @@ import { upload } from "../middlewares/MulterMiddleWare.js";
 import { DpRoleController } from "../controllers/Role.controllers.js"; 
 import { middlewareController } from "../middlewares/User.middleware.js";
 import { authController } from "../controllers/Auth.controller.js";
+import { DpRoleController } from "../controllers/Role.controllers.js";
+import {GroupController} from '../controllers/Group.controllers.js'
+import {UserGroupController} from '../controllers/UserGroup.controllers.js'
+
 
 const router = express.Router();
 
@@ -19,5 +23,15 @@ router.delete("/role/:id", DpRoleController.delete);
 
 router.post("/auth/login", authController.loginUser);
 router.post("/auth/logout",middlewareController.verifyToken, authController.userLogout);
+
+router.get("/user-group", UserGroupController.get);
+router.post("/user-group", UserGroupController.create);
+router.patch("/user-group/:id", UserGroupController.update);
+router.delete("/user-group/:id", UserGroupController.getDelete);
+
+router.get("/group", GroupController.get);
+router.post("/group", GroupController.create);
+router.patch("/group/:id", GroupController.update);
+router.delete("/group/:id", GroupController.getDelete);
 
 export default router;
