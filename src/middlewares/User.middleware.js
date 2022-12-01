@@ -6,7 +6,6 @@ export const Usermiddleware = {
     try {
       
       const token = req.headers.authorization.replace('Bearer','').trim();
-      console.log(token);
       if (token) {
         jwt.verify(token,process.env.JWT_ACCESS_KEY, (err, user) => {
           if (err) {
@@ -19,7 +18,6 @@ export const Usermiddleware = {
         return res.status(401).json("You're not authenticated");
       }
     } catch (error) {
-      // req.direct('http://localhost:5035/login')
       return res.status(401).json("You're not authenticated");
     }
 

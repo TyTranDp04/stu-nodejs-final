@@ -31,7 +31,6 @@ export const authController = {
     try {
       
       const user = await UserSchema.findOne({ Gmail: req.body.Gmail });
-      console.log(user);
       if (user ==="") {
         return res.status(402).json({
           statusCode: "402",
@@ -49,11 +48,6 @@ export const authController = {
         });
       }
       const validPassword = await UserSchema.findOne({ Password: req.body.Password });
-      // const validPassword = await bcrypt.compare(
-      //   req.body.Password,
-      //   user.Password
-      // );
-      console.log(validPassword);
       if (validPassword === "") {
         return res.status(402).json({
           statusCode: "402",
@@ -71,7 +65,6 @@ export const authController = {
         });
       }
       if (user && validPassword) {
-        console.log(req.headers.token.split(' ')[1]);
         const accessToken = authController.generateAccessToken(user);
         // res.cookie("accessToken", accessToken, {
         //   httpOnly: true,
