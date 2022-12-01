@@ -177,11 +177,8 @@ export const DayOffController = {
       );
   },
   upload(req, res, next) {
-    const { UserId, DayOffFrom, DayOffTo, Reason, RoleId } = req.body
-    const formData = RoleId === 3 ? {
-      ...req.body,
-      Status: 3
-    } : {
+    const { UserId, DayOffFrom, DayOffTo, Reason } = req.body
+    const formData ={
       ...req.body,
       Status: 1
     }
