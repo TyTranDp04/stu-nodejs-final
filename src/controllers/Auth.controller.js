@@ -66,12 +66,6 @@ export const authController = {
       }
       if (user && validPassword) {
         const accessToken = authController.generateAccessToken(user);
-        // res.cookie("accessToken", accessToken, {
-        //   httpOnly: true,
-        //   secure: false,
-        //   path: "/",
-        //   sameSite: "strict",
-        // });
         const { password, ...others } = user._doc;
         return res.status(200).json({
           statusCode: "200",
@@ -84,6 +78,9 @@ export const authController = {
               Name : user.Name,
               Avatar : user.Avatar,
               RoleID : user.RoleID,
+              GroupID: user.GroupID,
+              Address: user.Address,
+              Phone: user.Phone
             },
           },
           success: true,
@@ -93,7 +90,6 @@ export const authController = {
       return res.status(500).json(err);
     }
   },
-
 
   //log out
   userLogout: async (req, res) => {
