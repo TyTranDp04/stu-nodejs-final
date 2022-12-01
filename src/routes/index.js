@@ -4,9 +4,9 @@ import { upload } from "../middlewares/MulterMiddleWare.js";
 import { DpRoleController } from "../controllers/Role.controllers.js";
 import { Usermiddleware } from "../middlewares/User.middleware.js";
 import { authController } from "../controllers/Auth.controller.js";
-import { GroupController } from '../controllers/Group.controllers.js'
-import { UserGroupController } from '../controllers/UserGroup.controllers.js'
-import passport from "passport";
+import {GroupController} from '../controllers/Group.controllers.js'
+import {UserGroupController} from '../controllers/UserGroup.controllers.js'
+import {ChangePasswordController} from '../controllers/ChangePassword.controller.js'
 
 
 const router = express.Router();
@@ -35,5 +35,6 @@ router.patch("/group/:id", GroupController.update);
 router.delete("/group/:id", GroupController.getDelete);
 
 
+router.patch("/change-password/:id", ChangePasswordController.update);
 
 export default router;
