@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 import { softDeletePlugin } from 'soft-delete-plugin-mongoose'
 mongoose.Promise = global.Promise;
 const TableDayOff = new Schema({
-  Status: {type: String},
+  Status: {type: Number},
   DayOffFrom: { type: String },
   DayOffTo: { type: String },
   UserId: { type: String },

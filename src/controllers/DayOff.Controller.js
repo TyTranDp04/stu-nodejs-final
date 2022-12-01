@@ -1,17 +1,56 @@
 import { TableDayOffSchema } from '../schemas/TableDayOff.schemas.js'
 import { UserSchema } from '../schemas/User.schemas.js';
+import { DpRoleSchema } from '../schemas/TableRole.schemas.js';
 import { Helper } from '../helper/index.js';
 import axios from 'axios';
+import { UserGroupSchema } from '../schemas/UserGroup.schemas.js';
 export const DayOffController = {
   // [GET]
   show(req, res, next) {
-    TableDayOffSchema.find({})
+    const { body } = req
+    DpRoleSchema.find({ Id: body.RoleId })
       .then((data) => {
-        Helper.responseJsonHandler(data, null, res)
-
-      }).catch((error) => {
-        Helper.responseJsonHandler(null, error, res)
+        switch (data[0].RoleName) {
+          case 'user':
+            console.log('user')
+            TableDayOffSchema.find({ UserId: body._id })
+              .then((data) => {
+                Helper.responseJsonHandler(data, null, res)
+              }).catch((error) => {
+                Helper.responseJsonHandler(null, error, res)
+              })
+            break;
+          case 'master':
+            UserGroupSchema.find({})
+              .then((data) => {
+                const newdata = data.filter(function (e) {
+                  return body.GroupId.includes(e.GroupId)
+                })
+                res.json(newdata)
+              })
+              .catch((error) => {
+              })
+            break;
+          case 'hr':
+            console.log('hr')
+            TableDayOffSchema.find({})
+              .then((data) => {
+                Helper.responseJsonHandler(data, null, res)
+              }).catch((error) => {
+                Helper.responseJsonHandler(null, error, res)
+              })
+            break;
+          default:
+            console.log('default')
+            TableDayOffSchema.find({})
+              .then((data) => {
+                Helper.responseJsonHandler(data, null, res)
+              }).catch((error) => {
+                Helper.responseJsonHandler(null, error, res)
+              })
+        }
       })
+
   },
   showItem(req, res, next) {
     TableDayOffSchema.findByIdAndUpdate({ _id: req.params.id })
@@ -22,9 +61,14 @@ export const DayOffController = {
       })
   },
   update(req, res, next) {
-    const { file, body } = req
+    const { body } = req
     console.log(body._id)
-    TableDayOffSchema.updateOne({ _id: req.params.id }, body)
+    const newRequest = {
+      ...body,
+      Approve: [],
+      Status: 1
+    }
+    TableDayOffSchema.updateOne({ _id: req.params.id }, newRequest)
       .then((data) => {
         Helper.responseJsonHandler(data, null, res)
       }).catch((error) => {
@@ -49,15 +93,15 @@ export const DayOffController = {
       })
   },
   upload(req, res, next) {
-    const { body, file } = req
-    console.log(body, file)
+    const { body } = req
+    console.log(body)
     const formData = {
       ...body,
-     Status: 1
+      Status: 1
     }
     const courses = new TableDayOffSchema(formData)
     courses.save()
-    UserSchema.findById({ _id: req.params.id })
+      UserSchema.findById({ _id: body.UserId },)
       .then((data) => {
         axios.post('https://hooks.slack.com/services/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', {
           "blocks": [
@@ -65,7 +109,7 @@ export const DayOffController = {
               "type": "section",
               text: {
                 type: "mrkdwn",
-                text: `Name: *${data.Name}*\n\n Dayoff_from: *${body.DayOffFrom}*\n\n Dayoff_to: *${body.DayOffFrom}*\n\n Reason: *${body.Reason}*\n\n Link Website: *${body.DayOffFrom}*`
+                text: `Name: *${data.Name}*\n\n Dayoff_from: *${body.DayOffFrom}*\n\n Dayoff_to: *${body.DayOffFrom}*\n\n Reason: *${body.Reason}*\n\n Link Website: http://localhost:3000`
               }
             }]
         })
@@ -97,43 +141,36 @@ export const DayOffController = {
   },
   approve(req, res, next) {
     const { body } = req
-    TableDayOffSchema.findById({ _id: body.id })
+    TableDayOffSchema.findById({ _id: body.RequestId })
       .then((data) => {
         const idAprove = data.Approve
-        idAprove.push(body.userId)
-        TableDayOffSchema.updateOne({ _id: body.id }, { Approve: idAprove })
-          .then((data) => {
-
-            Helper.responseJsonHandler(data, null, res)
-
-          }).catch((error) => {
-            Helper.responseJsonHandler(null, error, res)
-          })
+        idAprove.push(body.UserId)
+        if (idAprove.length <= 3) {
+          TableDayOffSchema.updateOne({ _id: body.RequestId }, { Approve: idAprove })
+            .then((data) => {
+              Helper.responseJsonHandler(data, null, res)
+            }).catch((error) => {
+              Helper.responseJsonHandler(null, error, res)
+            })
+          if (idAprove.length === 3) {
+            TableDayOffSchema.updateOne({ _id: body.RequestId }, { Status: 3 })
+              .then((data) => {
+              }).catch((error) => {
+              })
+          }
+        } else {
+        }
       })
   },
   reject(req, res, next) {
     const { body } = req
-    TableDayOffSchema.updateOne({ _id: body.id }, { Status: 4 })
+    TableDayOffSchema.updateOne({ _id: body.RequestId }, { Status: 3 })
       .then((data) => {
         Helper.responseJsonHandler(data, null, res)
 
       }).catch((error) => {
         Helper.responseJsonHandler(null, error, res)
       })
-  },
-  test(req, res, next) {
-    const { body } = req
-    console.log(body)
-    axios.post('https://hooks.slack.com/services/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', {
-      "blocks": [
-        {
-          "type": "section",
-          text: {
-            type: "mrkdwn",
-            text: `Name: *${body.DayOffFrom}*\n\n Dayoff_from: *${body.DayOffFrom}*\n\n Dayoff_to: *${body.DayOffFrom}*\n\n Reason: *${body.DayOffFrom}*\n\n Link Website: *${body.DayOffFrom}*`
-          }
-        }]
-    })
   },
 }
 
