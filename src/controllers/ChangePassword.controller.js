@@ -2,23 +2,70 @@ import { UserSchema } from "../schemas/User.schemas.js";
 
 export const ChangePasswordController = {
   update(req, res, next) {
-    const { body } = req;
-    console.log(body);
-    UserSchema.findById({ _id: req.params.id }).then((data) => {
-      console.log(data);
-      if (body.confirmPassword === body.newPassword) {
-        if (body.oldPassword === data.Password) {
-          UserSchema.updateOne({ _id: req.params.id }, {Password : newPassword})
-            .then(() => res.redirect("/"))
+    try {
+      const { body } = req;
+      UserSchema.findById({ _id: req.params.id }).then((data) => {
+        if (body.confirmPassword != "" || body.newPassword != "") {
+          if (body.confirmPassword === body.newPassword) {
+            if (body.oldPassword != "") {
+              if (body.oldPassword != body.newPassword) {
+                if (body.oldPassword === data.Password) {
+                  UserSchema.updateOne(
+                    { _id: req.params.id },
+                    { Password: body.newPassword }
+                  )
 
-            .catch((next) => {});
+                    .then((data) =>
+                      res.json({
+                        statusCode: "200",
+                        message: "Change Password Success",
+                        success: true,
+                      })
+                    )
+                    .catch((next) => {});
+                } else {
+                  return res.status(402).json({
+                    statusCode: "402",
+                    message: "Old password is incorrect !",
+                    data: null,
+                    success: false,
+                  });
+                }
+              } else {
+                return res.status(402).json({
+                  statusCode: "402",
+                  message: "New password and Old Password is not the same !",
+                  data: null,
+                  success: false,
+                });
+              }
+            } else {
+              return res.status(400).json({
+                statusCode: "400",
+                message: "Old password cannot be blank !",
+                data: null,
+                success: false,
+              });
+            }
+          } else {
+            return res.status(402).json({
+              statusCode: "402",
+              message: "New password and Confirm Password is not the same !",
+              data: null,
+              success: false,
+            });
+          }
         } else {
-          return res.status(200).json("Old password is incorrect !");
+          return res.status(400).json({
+            statusCode: "400",
+            message: "New password and Confirm Password cannot be blank !",
+            data: null,
+            success: false,
+          });
         }
-      } else {
-        return res
-          .status(200).json("New password and Confirm Password is not the same !");
-      }
-    });
+      });
+    } catch (error) {
+      return res.status(500).json(err);
+    }
   },
 };
