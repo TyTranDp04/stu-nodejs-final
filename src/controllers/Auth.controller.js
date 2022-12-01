@@ -32,7 +32,7 @@ export const authController = {
       
       const user = await UserSchema.findOne({ Gmail: req.body.Gmail });
       console.log(user);
-      if (user =="") {
+      if (user ==="") {
         return res.status(402).json({
           statusCode: "402",
           message: "UserName is empty. UserName required",
@@ -54,7 +54,7 @@ export const authController = {
       //   user.Password
       // );
       console.log(validPassword);
-      if (validPassword == "") {
+      if (validPassword === "") {
         return res.status(402).json({
           statusCode: "402",
           message: "Password is empty. Password required",

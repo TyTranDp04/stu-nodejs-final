@@ -4,7 +4,9 @@ import jwt from 'jsonwebtoken'
 export const Usermiddleware = {
   verifyToken: (req, res, next) => {
     try {
+      
       const token = req.headers.authorization.replace('Bearer','').trim();
+      console.log(token);
       if (token) {
         jwt.verify(token,process.env.JWT_ACCESS_KEY, (err, user) => {
           if (err) {
