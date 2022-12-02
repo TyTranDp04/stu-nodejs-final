@@ -16,7 +16,7 @@ export const DayOffController = {
     const { UserId, RoleId, GroupId } = req.body
     DpRoleSchema.find({ Id: RoleId })
       .then((data) => {
-        switch (data[0].RoleName) {
+        switch (data[0]?.RoleName) {
           case 'user':
             TableDayOffSchema.find({ UserId: UserId })
               .then((data) =>
@@ -39,7 +39,7 @@ export const DayOffController = {
               .then((data) => {
                 let request = []
                 const newData = data.filter(function (e) {
-                  return GroupId.includes(e.GroupId)
+                  return GroupId?.includes(e.GroupId)
                 })
                 newData.map((e) => {
                   request.push(e.UserId)
