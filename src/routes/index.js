@@ -34,6 +34,6 @@ router.post("/group", GroupController.create);
 router.patch("/group/:id", GroupController.update);
 router.delete("/group/:id", GroupController.getDelete);
 
-router.patch("/change-password/:id", ChangePasswordController.update);
+router.patch("/change-password/:_id", ChangePasswordController.update);
 
 export default router;
