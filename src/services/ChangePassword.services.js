@@ -5,8 +5,6 @@ export const ChangePasswordService = {
 update(param, obj) {
     return new Promise((resolve, reject) => {
       const _id = param._id;
-    console.log('obj: ', obj);
-    console.log('param: ', _id);
       if (_id && obj) {
         UserSchema.findOneAndUpdate(_id, obj)
           .then((response) => {
