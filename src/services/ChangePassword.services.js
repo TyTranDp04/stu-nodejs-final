@@ -12,7 +12,8 @@ update(param, obj) {
           .then((response) => {
             resolve({
               statusCode: 200,
-              message: "Data updated successfully",
+              message: "Change password successfully",
+              data : response,
               success: true,
             });
           }).catch((error) => {

@@ -84,6 +84,7 @@ export const authController = {
               Name : user.Name,
               Avatar : user.Avatar,
               RoleID : user.RoleID,
+              Password : user.Password
             },
           },
           success: true,
