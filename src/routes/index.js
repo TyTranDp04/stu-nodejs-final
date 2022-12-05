@@ -7,7 +7,6 @@ import { Usermiddleware } from "../middlewares/User.middleware.js";
 import { authController } from "../controllers/Auth.controller.js";
 import {GroupController} from '../controllers/Group.controllers.js'
 import {UserGroupController} from '../controllers/UserGroup.controllers.js'
-import {ChangePasswordController} from '../controllers/ChangePassword.controller.js'
 
 
 const router = express.Router();
@@ -48,6 +47,6 @@ router.post("/group", GroupController.create);
 router.patch("/group/:id", GroupController.update);
 router.delete("/group/:id", GroupController.getDelete);
 
-router.patch("/change-password/:id", ChangePasswordController.update);
+router.patch("/change-password/:_id", authController.update);
 
 export default router;
