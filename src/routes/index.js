@@ -1,4 +1,5 @@
 import express from "express";
+import { DayOffController } from "../controllers/DayOff.controller.js";
 import { UserController } from "../controllers/User.controllers.js";
 import { upload } from "../middlewares/MulterMiddleWare.js";
 import { DpRoleController } from "../controllers/Role.controllers.js"; 
@@ -15,6 +16,19 @@ router.get("/user",Usermiddleware.verifyToken, UserController.get);
 router.post("/user", upload.single("Avatar"), UserController.create);
 router.patch("/user/:id", upload.single("Avatar"), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
+
+
+router.get('/dayoff',Usermiddleware.verifyToken, DayOffController.show);
+router.post('/dayoff',Usermiddleware.verifyToken, DayOffController.upload);
+router.get('/dayoff-soft',Usermiddleware.verifyToken, DayOffController.getDeleted);
+router.delete('/dayoff-soft/:id',Usermiddleware.verifyToken, DayOffController.softDelete);
+router.patch('/dayoff-soft/:id',Usermiddleware.verifyToken, DayOffController.restore);
+router.delete('/dayoff/:id',Usermiddleware.verifyToken, DayOffController.delete);
+router.get('/dayoff/:id',Usermiddleware.verifyToken, DayOffController.showItem);
+router.patch('/dayoff/:id',Usermiddleware.verifyToken, DayOffController.update);
+router.post('/approve',Usermiddleware.verifyToken, DayOffController.approve);
+router.post('/reject',Usermiddleware.verifyToken, DayOffController.reject);
+
 
 router.get("/role", DpRoleController.get);
 router.post("/role", DpRoleController.create);
