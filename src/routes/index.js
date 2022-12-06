@@ -17,17 +17,19 @@ router.patch("/user/:id", upload.single("Avatar"), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
 
 
-router.get('/dayoff',Usermiddleware.verifyToken, DayOffController.show);
-router.post('/dayoff',Usermiddleware.verifyToken, DayOffController.upload);
-router.get('/dayoff-soft',Usermiddleware.verifyToken, DayOffController.getDeleted);
-router.delete('/dayoff-soft/:id',Usermiddleware.verifyToken, DayOffController.softDelete);
-router.patch('/dayoff-soft/:id',Usermiddleware.verifyToken, DayOffController.restore);
-router.delete('/dayoff/:id',Usermiddleware.verifyToken, DayOffController.delete);
-router.get('/dayoff/:id',Usermiddleware.verifyToken, DayOffController.showItem);
-router.patch('/dayoff/:id',Usermiddleware.verifyToken, DayOffController.update);
-router.post('/approve',Usermiddleware.verifyToken, DayOffController.approve);
-router.post('/reject',Usermiddleware.verifyToken, DayOffController.reject);
+router.get('/dayoff', DayOffController.show);
+router.post('/dayoff', DayOffController.upload);
+router.get('/dayoff-soft', DayOffController.getDeleted);
+router.delete('/dayoff-soft/:id', DayOffController.softDelete);
+router.patch('/dayoff-soft/:id', DayOffController.restore);
+router.delete('/dayoff/:id', DayOffController.delete);
+router.get('/dayoff/:id', DayOffController.showItem);
+router.patch('/dayoff/:id', DayOffController.update);
+router.post('/approve', DayOffController.approve);
+router.post('/reject', DayOffController.reject);
 
+router.get("/notication", DpRoleController.get);
+router.post("/notication/:id", DpRoleController.create);
 
 router.get("/role", DpRoleController.get);
 router.post("/role", DpRoleController.create);
