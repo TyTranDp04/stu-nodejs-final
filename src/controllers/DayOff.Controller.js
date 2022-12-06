@@ -14,91 +14,117 @@ export const DayOffController = {
   // [GET]
   show(req, res, next) {
     const { UserId, RoleId, GroupId } = req.body
-    DpRoleSchema.find({ Id: RoleId })
-      .then((data) => {
-        switch (data[0].RoleName) {
-          case 'user':
-            TableDayOffSchema.find({ UserId: UserId })
-              .then((data) =>
-                res.status(200).json({
-                  statusCode: 200,
-                  message: "Get data for user successfully",
-                  data: data,
-                  success: true,
-                })
-              )
-              .catch(() =>
-                res.status(404).json({
-                  success: false,
-                  message: `Can't find id: ${UserId}.`,
-                })
-              );
-            break;
-          case 'master':
-            UserGroupSchema.find({})
-              .then((data) => {
-                let request = []
-                const newData = data.filter(function (e) {
-                  return GroupId.includes(e.GroupId)
-                })
-                newData.map((e) => {
-                  request.push(e.UserId)
-                })
-                TableDayOffSchema.find({})
-                  .then((data) => {
-                    const Data = data.filter(function (e) {
-                      return request.includes(e.UserId)
-                    })
-                    res.status(200).json({
-                      statusCode: 200,
-                      message: "Get data for master successfully",
-                      data: Data,
-                      success: true,
-                    })
-                  })
+    const idGroup = []
+    const idMaster = []
+    UserGroupSchema.find({ UserId: UserId })
+      .then((Data) => {
+        Data.map((e) => {
+          idGroup.push(e.GroupId)
+        })
+        UserSchema.find({})
+          .then((data) => {
+            idGroup.map((id) => {
+              const masterId = data.filter(function (user) {
+                return user.GroupId.includes(id)
               })
-              .catch(() =>
-                res.status(404).json({
-                  success: false,
-                  message: `Can't find data.`,
-                })
-              );
-            break;
-          case 'hr':
-            TableDayOffSchema.find({})
-              .then((data) =>
-                res.status(200).json({
-                  statusCode: 200,
-                  message: "Get data for hr successfully",
-                  data: data,
-                  success: true,
-                })
-              )
-              .catch(() =>
-                res.status(404).json({
-                  success: false,
-                  message: `Can't find data.`,
-                })
-              );
-            break;
-          default:
-            TableDayOffSchema.find({})
-              .then((data) =>
-                res.status(200).json({
-                  statusCode: 200,
-                  message: "Get data successfully",
-                  data: data,
-                  success: true,
-                })
-              )
-              .catch(() =>
-                res.status(404).json({
-                  success: false,
-                  message: `Can't find data.`,
-                })
-              );
-        }
+              masterId.map((e) => {
+                if (e.RoleId === "2") {
+                  idMaster.push(e._id)
+                }
+              })
+            })
+            DpRoleSchema.find({ Id: RoleId })
+              .then((data) => {
+                switch (data[0]?.RoleName) {
+                  case 'user':
+                    console.log('user')
+                    TableDayOffSchema.find({ UserId: UserId })
+                      .then((data) =>
+                        res.status(200).json({
+                          statusCode: 200,
+                          message: "Get data for user successfully",
+                          data: data,
+                          success: true,
+                          idMaster: idMaster
+                        })
+                      )
+                      .catch(() =>
+                        res.status(404).json({
+                          success: false,
+                          message: `Can't find id: ${UserId}.`,
+                        })
+                      );
+                    break;
+                  case 'master':
+                    UserGroupSchema.find({})
+                      .then((data) => {
+                        let request = []
+                        const newData = data.filter(function (e) {
+                          return GroupId?.includes(e.GroupId)
+                        })
+                        newData.map((e) => {
+                          request.push(e.UserId)
+                        })
+                        TableDayOffSchema.find({})
+                          .then((data) => {
+                            const Data = data.filter(function (e) {
+                              return request.includes(e.UserId)
+                            })
+                            res.status(200).json({
+                              statusCode: 200,
+                              message: "Get data for master successfully",
+                              data: Data,
+                              success: true,
+                            })
+                          })
+                      })
+                      .catch(() =>
+                        res.status(404).json({
+                          success: false,
+                          message: `Can't find data.`,
+                        })
+                      );
+                    break;
+                  case 'hr':
+                    TableDayOffSchema.find({})
+                      .then((data) =>
+                        res.status(200).json({
+                          statusCode: 200,
+                          message: "Get data for hr successfully",
+                          data: data,
+                          success: true,
+                        })
+                      )
+                      .catch(() =>
+                        res.status(404).json({
+                          success: false,
+                          message: `Can't find data.`,
+                        })
+                      );
+                    break;
+                  default:
+                    TableDayOffSchema.find({})
+                      .then((data) =>
+                        res.status(200).json({
+                          statusCode: 200,
+                          message: "Get data successfully",
+                          data: data,
+                          success: true,
+                          idMaster: idMaster
+                        })
+                      )
+                      .catch(() =>
+                        res.status(404).json({
+                          success: false,
+                          message: `Can't find data.`,
+                        })
+                      );
+                }
+              })
+          })
+
       })
+
 
   },
   showItem(req, res, next) {
@@ -120,7 +146,13 @@ export const DayOffController = {
   },
   update(req, res) {
     const { body } = req
-    const newRequest = {
+    console.log(body);
+    const newRequest = body.Approve.includes(body.UserId)?{
+      ...body,
+      Approve: [body.UserId],
+      Status: 1
+    }:
+    {
       ...body,
       Approve: [],
       Status: 1
@@ -160,49 +192,76 @@ export const DayOffController = {
       );
   },
   softDelete(req, res, next) {
-    TableDayOffSchema.softDelete({ _id: req.params.id })
-      .then((data) =>
-        res.status(200).json({
-          statusCode: 200,
-          message: "Soft Delete data successfully",
-          data: data,
-          success: true,
-        })
-      )
-      .catch(() =>
-        res.status(404).json({
-          success: false,
-          message: `Can't find id: ${req.params.id}.`,
-        })
-      );
+    TableDayOffSchema.findOne({ _id: req.params.id })
+      .then((data) => {
+        if (data.Status === 3) {
+          TableDayOffSchema.deleteOne({ _id: req.params.id })
+            .then((data) =>
+              res.status(200).json({
+                statusCode: 200,
+                message: "Soft Delete data successfully",
+                data: data,
+                success: true,
+              })
+            )
+            .catch(() =>
+              res.status(404).json({
+                success: false,
+                message: `Can't find id: ${req.params.id}.`,
+              })
+            );
+        } else {
+          TableDayOffSchema.softDelete({ _id: req.params.id })
+            .then((data) =>
+              res.status(200).json({
+                statusCode: 200,
+                message: "Soft Delete data successfully",
+                data: data,
+                success: true,
+              })
+            )
+            .catch(() =>
+              res.status(404).json({
+                success: false,
+                message: `Can't find id: ${req.params.id}.`,
+              })
+            );
+        }
+      }).catch((error) => error)
   },
   upload(req, res, next) {
-    const { UserId, DayOffFrom, DayOffTo, Reason } = req.body
-    const formData ={
+    const { UserId, DayOffFrom, DayOffTo, Reason, Name, RoleId } = req.body
+    const formData = RoleId === "2" ? {
       ...req.body,
-      Status: 1
+      Status: 1,
+      Name,
+      Approve: [UserId]
+    } : {
+      ...req.body,
+      Status: 1,
+      Name,
     }
+    console.log(formData)
     const courses = new TableDayOffSchema(formData)
     courses.save()
-    UserSchema.findById({ _id: UserId },)
-      .then((data) => {
-        axios.post(LINK_URL_SLACK_BOT, {
-          "blocks": [
-            {
-              "type": "section",
-              text: {
-                type: "mrkdwn",
-                text: `Name: ${data.Name}\n\n Dayoff_from: ${DayOffFrom}\n\n Dayoff_to: ${DayOffTo}\n\n Reason: ${Reason}\n\n Link Website: ${LINK_URL_WEBSITE}`
-              }
-            }]
-        })
+      .then(() => {
+        // axios.post(LINK_URL_SLACK_BOT, {
+        //   "blocks": [
+        //     {
+        //       "type": "section",
+        //       text: {
+        //         type: "mrkdwn",
+        //         text: `Name: ${Name}\n\n Dayoff_from: ${DayOffFrom}\n\n Dayoff_to: ${DayOffTo}\n\n Reason: ${Reason}\n\n Link Website: ${LINK_URL_WEBSITE}`
+        //       }
+        //     }]
+        // })
         res.status(200).json({
           statusCode: 200,
           message: "Notification Slack successfully",
           data: {
-            Name: data.name,
+            Name: Name,
             Dayoff_from: DayOffFrom,
-            Dayoff_to: DayOffFrom,
+            Dayoff_to: DayOffTo,
             Reason: Reason,
             Link_website: LINK_URL_WEBSITE
           },
@@ -216,7 +275,7 @@ export const DayOffController = {
       );
   },
   getDeleted(req, res) {
-    TableDayOffSchema.findDeleted()
+    TableDayOffSchema.findDeleted({UserId:req.body.UserId })
       .then((data) =>
         res.status(200).json({
           statusCode: 200,
@@ -246,7 +305,7 @@ export const DayOffController = {
       }));
   },
   approve(req, res, next) {
-    const { RequestId, UserId, UserAproveId } = req.body
+    const { RequestId, UserId, UserAproveId, Master } = req.body
     const idGroup = []
     const idMaster = []
 
@@ -263,18 +322,20 @@ export const DayOffController = {
               })
               masterId.map((e) => {
                 if (e.RoleId === "2") {
-                  idMaster.push(e._id)
+                  if(idMaster.includes(e._id)){
+                  }else {
+                    idMaster.push(e._id)
+                  }
                 }
               })
-
+              console.log(idMaster)
             })
-            console.log(idMaster)
             TableDayOffSchema.findById({ _id: RequestId })
               .then((data) => {
                 const idAprove = data.Approve
                 idAprove.push(UserAproveId)
                 if (idAprove.length <= idMaster.length) {
-                  TableDayOffSchema.updateOne({ _id: RequestId }, { Approve: idAprove })
+                  TableDayOffSchema.updateOne({ _id: RequestId }, { Approve: idAprove } )
                     .then(() =>
                       res.status(200).json({
                         statusCode: 200,
@@ -292,7 +353,7 @@ export const DayOffController = {
                   if (idAprove.length === idMaster.length) {
                     TableDayOffSchema.updateOne({ _id: RequestId }, { Status: 2 })
                       .then((data) => {
-                       })
+                      })
                       .catch((error) => {
                       })
                   }

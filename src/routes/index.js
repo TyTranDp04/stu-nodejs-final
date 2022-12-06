@@ -17,9 +17,9 @@ router.patch("/user/:id", upload.single("Avatar"), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
 
 
-router.get('/dayoff', DayOffController.show);
-router.post('/dayoff', DayOffController.upload);
-router.get('/dayoff-soft', DayOffController.getDeleted);
+router.post('/dayoff', DayOffController.show);
+router.post('/newdayoff', DayOffController.upload);
+router.post('/dayoff-soft', DayOffController.getDeleted);
 router.delete('/dayoff-soft/:id', DayOffController.softDelete);
 router.patch('/dayoff-soft/:id', DayOffController.restore);
 router.delete('/dayoff/:id', DayOffController.delete);

@@ -84,7 +84,8 @@ export const authController = {
               Gmail: user.Gmail,
               Name : user.Name,
               Avatar : user.Avatar,
-              RoleID : user.RoleID,
+              RoleId : user.RoleId,
+              GroupId: user.GroupId,
               Password : user.Password
             },
           },
