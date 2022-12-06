@@ -1,7 +1,8 @@
 import { UserSchema } from "../schemas/User.schemas.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
+import { Helper } from "../helper/index.js";
+import { ChangePasswordService } from "../services/ChangePassword.services.js";
 
 export const authController = {
 
@@ -85,6 +86,7 @@ export const authController = {
               Avatar : user.Avatar,
               RoleId : user.RoleId,
               GroupId: user.GroupId,
+              Password : user.Password
             },
           },
           success: true,
@@ -100,7 +102,19 @@ export const authController = {
   userLogout: async (req, res) => {
     res.clearCookie("accessToken");
     return res.status(200).json("logOut!")
-  }
+  },
+
+  update(request, response) {
+    const id = request.params;
+    const updateObj = request.body;
+    ChangePasswordService.update({ _id: id }, { $set: updateObj })
+      .then((data) => {
+        Helper.responseJsonHandler(data, null, response);
+      })
+      .catch((error) => {
+        Helper.responseJsonHandler(null, error, response);
+      });
+  },
 };
 
 
