@@ -2,12 +2,10 @@ import { TableDayOffSchema } from '../schemas/TableDayOff.schemas.js'
 import { UserSchema } from '../schemas/User.schemas.js';
 import { DpRoleSchema } from '../schemas/TableRole.schemas.js';
 import axios from 'axios';
-import { Helper } from '../helper/index.js';
 import { UserGroupSchema } from '../schemas/UserGroup.schemas.js';
 import dotenv from 'dotenv'
 dotenv.config()
-const LINK_URL_WEBSITE = process.env.LINK_URL_WEBSITE
-const LINK_URL_SLACK_BOT = process.env.LINK_URL_SLACK_BOT
+const LINK_URL_API= process.env.LINK_URL_API
 
 
 export const DayOffController = {
@@ -241,30 +239,22 @@ export const DayOffController = {
       Status: 1,
       Name,
     }
-    console.log(formData)
     const courses = new TableDayOffSchema(formData)
     courses.save()
-      .then(() => {
-        // axios.post(LINK_URL_SLACK_BOT, {
-        //   "blocks": [
-        //     {
-        //       "type": "section",
-        //       text: {
-        //         type: "mrkdwn",
-        //         text: `Name: ${Name}\n\n Dayoff_from: ${DayOffFrom}\n\n Dayoff_to: ${DayOffTo}\n\n Reason: ${Reason}\n\n Link Website: ${LINK_URL_WEBSITE}`
-        //       }
-        //     }]
-        // })
+      .then((data) => {
+        const formData = {
+          Name,
+          DayOffFrom,
+          UserId,
+          DayOffTo,
+          Reason,
+          IsRead: false,
+        }
+        axios.post(LINK_URL_API+'/notification', formData)
         res.status(200).json({
           statusCode: 200,
-          message: "Notification Slack successfully",
-          data: {
-            Name: Name,
-            Dayoff_from: DayOffFrom,
-            Dayoff_to: DayOffTo,
-            Reason: Reason,
-            Link_website: LINK_URL_WEBSITE
-          },
+          message: "upload data successfully",
+          data: data,
           success: true,
         })
       }).catch(() =>

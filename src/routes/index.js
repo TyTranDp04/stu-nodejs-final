@@ -7,7 +7,7 @@ import { Usermiddleware } from "../middlewares/User.middleware.js";
 import { authController } from "../controllers/Auth.controller.js";
 import {GroupController} from '../controllers/Group.controllers.js'
 import {UserGroupController} from '../controllers/UserGroup.controllers.js'
-
+import { NotificationController } from "../controllers/Notification.controller.js";
 
 const router = express.Router();
 
@@ -28,8 +28,11 @@ router.patch('/dayoff/:id', DayOffController.update);
 router.post('/approve', DayOffController.approve);
 router.post('/reject', DayOffController.reject);
 
-router.get("/notication", DpRoleController.get);
-router.post("/notication/:id", DpRoleController.create);
+router.get("/notification/:id", NotificationController.get);
+router.patch("/notification/:id", NotificationController.update);
+router.post("/notification", NotificationController.upload);
+
+
 
 router.get("/role", DpRoleController.get);
 router.post("/role", DpRoleController.create);
