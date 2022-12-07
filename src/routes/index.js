@@ -9,6 +9,7 @@ router.get("/user", UserController.get);
 router.post("/user", upload.single("Avatar"), UserController.create);
 router.patch("/user/:id", upload.single("Avatar"), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
+router.get("/user/:key",UserController.searchUser);
 
 router.get("/role", DpRoleController.get);
 router.post("/role", DpRoleController.create);

@@ -1,8 +1,20 @@
 import { UserSchema } from "../schemas/User.schemas.js";
 import { that } from "../middlewares/Upload.model.js"
-
+import bcrypt from "bcrypt";
 
 export const UserController = {
+
+  searchUser:  async(req,res) =>{
+    let result = await UserSchema.find(
+      {
+        "$or":[
+          {Name:{$regex:req.params.key}}
+        ]
+      }
+    );
+    res.send(result);
+  },
+
     get(req,res,next){
         UserSchema.find({})
         .then(user => {
