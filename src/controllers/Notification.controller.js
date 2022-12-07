@@ -10,7 +10,7 @@ const LINK_URL_CHANNEL_GENERAL = process.env.LINK_URL_CHANNEL_HR
 
 export const NotificationController = {
   get(req, res, next) {
-    UserSchema.find({ _id: req.params.id })
+    UserSchema.find({ _id: req?.params?.id })
       .then((groupId) => {
         UserGroupSchema.find({})
           .then((data) => {
@@ -43,14 +43,9 @@ export const NotificationController = {
       })
   },
   update(req, res, next) {
+    console.log(req.params.id)
     NotificationDayOffSchema.updateOne({ _id: req.params.id }, { IsRead: true })
       .then(data => {
-        res.status(200).json({
-          statusCode: 200,
-          message: "Get data for master successfully",
-          data: data,
-          success: true,
-        })
       })
       .catch(next)
   },
@@ -59,7 +54,7 @@ export const NotificationController = {
     const coursesNoti = new NotificationDayOffSchema(body)
     coursesNoti.save()
       .then((data) => {
-        SlackBot(LINK_URL_CHANNEL_HR,body)
+        // SlackBot(LINK_URL_CHANNEL_HR,body)
         res.status(200).json({
           statusCode: 200,
           message: "Notification Slack successfully",

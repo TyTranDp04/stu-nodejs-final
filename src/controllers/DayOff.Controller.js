@@ -249,6 +249,8 @@ export const DayOffController = {
           DayOffTo,
           Reason,
           IsRead: false,
+          Type: 1,
+          Quantity: 1,
         }
         axios.post(LINK_URL_API+'/notification', formData)
         res.status(200).json({

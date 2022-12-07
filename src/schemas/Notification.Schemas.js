@@ -10,6 +10,8 @@ const NotificationDayOff = new Schema({
   DayOffTo: { type: Date,  require: true, },
   UserId: { type: String, require: true, },
   Reason: { type: String, require: true,},
+  Type: { type: Number, require: true,},
+  Quantity: { type: Number, require: true,},
   IsRead: { type: Number },
 }, { timestamps: true });
 NotificationDayOff.plugin(softDeletePlugin);
