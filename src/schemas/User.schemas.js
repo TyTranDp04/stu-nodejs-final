@@ -17,6 +17,10 @@ const DropSchemaUser = new mongoose.Schema({
         type:String,
         require: true,
     },
+    GroupId: {
+        type:Array,
+        require: true,
+    },
     Gmail: {
         type:String,
         require: true,
@@ -25,7 +29,6 @@ const DropSchemaUser = new mongoose.Schema({
         type:String,
         require: true,
     },
-
 }, {timestamps:true});
 
 DropSchemaUser.plugin(softDeletePlugin);
