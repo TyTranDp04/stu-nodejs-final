@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.get("/user",Usermiddleware.verifyToken, UserController.get);
 router.post("/user", upload.single("Avatar"), UserController.create);
-router.patch("/user/:id", upload.single("Avatar"), UserController.update);
+router.post("/user/:id", upload.single("img"), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
 
 
