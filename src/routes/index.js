@@ -8,11 +8,12 @@ import { authController } from "../controllers/Auth.controller.js";
 import {GroupController} from '../controllers/Group.controllers.js'
 import {UserGroupController} from '../controllers/UserGroup.controllers.js'
 import { NotificationController } from "../controllers/Notification.controller.js";
+import multer from "multer";
 
 const router = express.Router();
 
-router.get("/user",Usermiddleware.verifyToken, UserController.get);
-router.post("/user", upload.single("Avatar"), UserController.create);
+router.get("/user", UserController.get);
+router.post("/user", multer().none(),UserController.create);
 router.patch("/user/:id", upload.single("Avatar"), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
 router.get("/user/:key",UserController.searchUser);
