@@ -268,13 +268,18 @@ export const DayOffController = {
   },
   getDeleted(req, res) {
     TableDayOffSchema.findDeleted({UserId:req.body.UserId })
-      .then((data) =>
+      .then((data)=>{
+        const newData = data.filter(function (user) {
+          return user.UserId === req.body.UserId
+        })
+        console.log(newData)
         res.status(200).json({
           statusCode: 200,
           message: "Get deleted data successfully",
-          data: data,
+          data: newData,
           success: true,
         })
+      } 
       )
       .catch(() =>
         res.status(404).json({
