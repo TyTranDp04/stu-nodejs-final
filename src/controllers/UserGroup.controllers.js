@@ -1,5 +1,5 @@
+import { UserSchema } from "../schemas/User.schemas.js";
 import { UserGroupSchema } from "../schemas/UserGroup.schemas.js";
-
 
 export const UserGroupController = {
   get(req, res, next) {
@@ -18,10 +18,33 @@ export const UserGroupController = {
       .catch(err => {
       });
   },
-  getDelete(req, res, next) {
-    UserGroupSchema.deleteOne({ _id: req.params.id })
+  delete(req, res, next) {
+    const { UserId, GroupId } = req.body
+    UserGroupSchema.find({ GroupId: GroupId })
       .then(course => {
-        res.json(course)
+        course?.map((e) => {
+          if (e.UserId === UserId) {
+            UserGroupSchema.deleteOne({ _id: e._id })
+              .then(() => {
+                UserSchema.find({ _id: UserId })
+                  .then((user) => {
+                    const GroupIdArray = []
+                    user[0]?.GroupId?.map((e) => {
+                      if (e !== GroupId) {
+                        GroupIdArray.push(e)
+                      }
+                    })
+                    console.log(GroupIdArray)
+                    UserSchema.updateOne({ _id: UserId}, {GroupId: GroupIdArray})
+                    .then(()=>{
+                      res.redirect('/')
+                    })
+                  })
+              })
+              .catch(next => {
+              });
+          }
+        })
       })
       .catch(next)
   },
@@ -31,6 +54,6 @@ export const UserGroupController = {
       .then(() => res.redirect('/'))
       .catch(next => {
       });
-  }
+  },
 }
 

@@ -11,7 +11,7 @@ import { NotificationController } from "../controllers/Notification.controller.j
 
 const router = express.Router();
 
-router.get("/user",Usermiddleware.verifyToken, UserController.get);
+router.get("/user", UserController.get);
 router.post("/user", upload.single("Avatar"), UserController.create);
 router.patch("/user/:id", upload.single("Avatar"), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
@@ -45,12 +45,12 @@ router.post("/auth/logout",Usermiddleware.verifyToken, authController.userLogout
 router.get("/user-group", UserGroupController.get);
 router.post("/user-group", UserGroupController.create);
 router.patch("/user-group/:id", UserGroupController.update);
-router.delete("/user-group/:id", UserGroupController.getDelete);
+router.post("/user-group/delete", UserGroupController.delete);
 
 router.get("/group", GroupController.get);
 router.post("/group", GroupController.create);
 router.patch("/group/:id", GroupController.update);
-router.delete("/group/:id", GroupController.getDelete);
+router.delete("/group/:id", GroupController.delete);
 
 router.patch("/change-password/:_id", authController.update);
 

@@ -1,36 +1,56 @@
 import { GroupSchema } from "../schemas/Group.schemas.js";
+import { UserGroupSchema } from "../schemas/UserGroup.schemas.js";
 
 
 export const GroupController = {
   get(req, res, next) {
     GroupSchema.find({})
-      .then(user => {
-        res.json(user)
+      .then(data => {
+        res.status(200).json({
+          statusCode: 200,
+          message: "Get data for user successfully",
+          data: data,
+          success: true,
+        })
       })
       .catch(next)
   },
   create(req, res) {
     const { body } = req
     const courses = new GroupSchema(body)
-    console.log(courses)
     courses.save()
-      .then(() => res.redirect('/'))
+      .then((data) => {
+        res.status(200).json({
+          statusCode: 200,
+          message: "Get data for user successfully",
+          data: data,
+          success: true,
+        })
+      })
       .catch(err => {
       });
   },
-  getDelete(req, res, next) {
-    GroupSchema.deleteOne({ _id: req.params.id })
-      .then(course => {
-        res.json(course)
+  delete(req, res, next) {
+    UserGroupSchema.deleteMany({ GroupId: req.params.id })
+      .then(() => {
+        GroupSchema.deleteOne({ _id: req.params.id })
+          .then((data) =>
+            res.status(200).json({
+              statusCode: 200,
+              message: "Get data for user successfully",
+              data: data,
+              success: true,
+            }))
       })
       .catch(next)
   },
   update(req, res, next) {
     const { body } = req
-    GroupSchema.updateOne({ _id: req.params.id }, body)
+    GroupSchema.updateOne({ _id:body.id }, body.Name)
       .then(() => res.redirect('/'))
       .catch(next => {
       });
+
   }
 }
 
