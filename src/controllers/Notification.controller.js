@@ -6,7 +6,7 @@ import {SlackBot} from '../services/SlackBot.services.js'
 dotenv.config()
 const LINK_URL_CHANNEL_DAYOFF = process.env.LINK_URL_CHANNEL_DAYOFF
 const LINK_URL_CHANNEL_HR = process.env.LINK_URL_CHANNEL_HR
-const LINK_URL_CHANNEL_GENERAL = process.env.LINK_URL_CHANNEL_HR
+const LINK_URL_CHANNEL_GENERAL = process.env.LINK_URL_CHANNEL_GENERAL
 
 export const NotificationController = {
   get(req, res, next) {
@@ -54,7 +54,9 @@ export const NotificationController = {
     const coursesNoti = new NotificationDayOffSchema(body)
     coursesNoti.save()
       .then((data) => {
-        // SlackBot(LINK_URL_CHANNEL_HR,body)
+        SlackBot(LINK_URL_CHANNEL_DAYOFF,body)
+        SlackBot(LINK_URL_CHANNEL_HR,body)
+        SlackBot(LINK_URL_CHANNEL_GENERAL,body)
         res.status(200).json({
           statusCode: 200,
           message: "Notification Slack successfully",
