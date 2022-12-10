@@ -248,7 +248,6 @@ export const DayOffController = {
           UserId,
           DayOffTo,
           Reason,
-          IsRead: false,
           Type: 1,
           Quantity: 1,
         }
