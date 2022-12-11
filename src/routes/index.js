@@ -29,8 +29,10 @@ router.post('/approve', DayOffController.approve);
 router.post('/reject', DayOffController.reject);
 
 router.get("/notification/:id", NotificationController.get);
-router.patch("/notification/:id", NotificationController.update);
+router.post("/delete-notification", NotificationController.update);
 router.post("/notification", NotificationController.upload);
+router.delete('/notification/:id', NotificationController.delete);
+
 
 
 
