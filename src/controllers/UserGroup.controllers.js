@@ -12,7 +12,6 @@ export const UserGroupController = {
   create(req, res) {
     const { body } = req
     const courses = new UserGroupSchema(body)
-    console.log(courses)
     courses.save()
       .then(() => res.redirect('/'))
       .catch(err => {
@@ -20,6 +19,7 @@ export const UserGroupController = {
   },
   delete(req, res, next) {
     const { UserId, GroupId } = req.body
+    console.log(UserId, GroupId)
     UserGroupSchema.find({ GroupId: GroupId })
       .then(course => {
         course?.map((e) => {
@@ -42,6 +42,7 @@ export const UserGroupController = {
                   })
               })
               .catch(next => {
+                console.log("can't not find")
               });
           }
         })
@@ -55,5 +56,34 @@ export const UserGroupController = {
       .catch(next => {
       });
   },
+  addUserGroup(req, res){
+    const { body } = req
+    const form ={
+      UserId: body?._id,
+      GroupId: body?.GroupIdAdd,
+      Name: body?.Name
+    }
+    const courses = new UserGroupSchema(form)
+    courses.save()
+    .then(()=>{
+      const IdGroup = body?.GroupId
+      IdGroup.push(body?.GroupIdAdd)
+      UserSchema.updateOne({_id: body?._id }, {GroupId: IdGroup})
+      .then((data)=>{
+        res.status(200).json({
+          statusCode: 200,
+          message: "Get data for user successfully",
+          data: data,
+          success: true,
+        })
+      })
+    })
+    .catch(() =>
+        res.status(404).json({
+          success: false,
+          message: `Can't find id: ${body.UserId}.`,
+        })
+      );
+  }
 }
 

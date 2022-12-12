@@ -46,6 +46,8 @@ router.get("/user-group", UserGroupController.get);
 router.post("/user-group", UserGroupController.create);
 router.patch("/user-group/:id", UserGroupController.update);
 router.post("/user-group/delete", UserGroupController.delete);
+router.post("/add-user-group", UserGroupController.addUserGroup);
+
 
 router.get("/group", GroupController.get);
 router.post("/group", GroupController.create);
