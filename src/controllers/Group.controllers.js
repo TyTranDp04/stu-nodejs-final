@@ -8,12 +8,17 @@ export const GroupController = {
       .then(data => {
         res.status(200).json({
           statusCode: 200,
-          message: "Get data for user successfully",
+          message: "Get data group successfully",
           data: data,
           success: true,
         })
       })
-      .catch(next)
+      .catch(() =>
+        res.status(404).json({
+          success: false,
+          message: `Can't get.`,
+        })
+      );
   },
   create(req, res) {
     const { body } = req
@@ -22,13 +27,17 @@ export const GroupController = {
       .then((data) => {
         res.status(200).json({
           statusCode: 200,
-          message: "Get data for user successfully",
+          message: "create data group successfully",
           data: data,
           success: true,
         })
       })
-      .catch(err => {
-      });
+      .catch(() =>
+        res.status(404).json({
+          success: false,
+          message: `Can't create.`,
+        })
+      );
   },
   delete(req, res, next) {
     console.log(req.params.id)
@@ -54,7 +63,7 @@ export const GroupController = {
         })
         res.status(200).json({
           statusCode: 200,
-          message: "Notification Slack successfully",
+          message: "delete group successfully",
           success: true,
         })
       })
@@ -68,9 +77,19 @@ export const GroupController = {
   update(req, res, next) {
     const { body } = req
     GroupSchema.updateOne({ _id: body.id }, body.Name)
-      .then(() => res.redirect('/'))
-      .catch(next => {
-      });
+      .then((data) =>
+        res.status(200).json({
+          statusCode: 200,
+          message: "update data successfully",
+          data: data,
+          success: true,
+        }))
+      .catch(() =>
+        res.status(404).json({
+          success: false,
+          message: `Can't find id: ${body?.id }.`,
+        })
+      );
 
   }
 }
