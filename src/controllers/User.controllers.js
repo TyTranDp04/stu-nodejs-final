@@ -29,6 +29,7 @@ export const UserController = {
       Password: "12345678",
       Avatar:
         "https://vnn-imgs-a1.vgcloud.vn/image1.ictnews.vn/_Files/2020/03/17/trend-avatar-1.jpg",
+      
     };
     const courses = new UserSchema(data);
     console.log(courses);
@@ -43,6 +44,23 @@ export const UserController = {
         res.json(course);
       })
       .catch(next);
+  },
+  showItem(req, res, next) {
+    UserSchema.findByIdAndUpdate({ _id: req.params.id })
+      .then((data) =>
+        res.status(200).json({
+          statusCode: 200,
+          message: "Get data successfully",
+          data: data,
+          success: true,
+        })
+      )
+      .catch(() =>
+        res.status(404).json({
+          success: false,
+          message: `Can't find id: ${req.params.id}.`,
+        })
+      );
   },
   update(req, res, next) {
     const { file, body } = req;

@@ -19,7 +19,6 @@ const DropSchemaUser = new mongoose.Schema({
     },
     GroupId: {
         type:Array,
-        require: true,
     },
     Gmail: {
         type:String,
