@@ -10,6 +10,13 @@ export const UserController = {
         })
         .catch(next)
     },
+    getone(req,res,next){
+      UserSchema.findOne({_id: req.params.id })
+      .then(user => {
+          res.json(user)
+      })
+      .catch(next)
+  },
     create(req, res) {
         const { body, file } = req
         if (file) {
@@ -27,7 +34,6 @@ export const UserController = {
             })
         } else {
           const courses = new UserSchema(body)
-          console.log(courses)
           courses.save()
             .then(() => res.redirect('/'))
             .catch(err => {
@@ -47,20 +53,31 @@ export const UserController = {
         if (file) {
           that.uploadFileDriver({ shared: true }, file)
             .then(result => {
+              // console.log(result);
               const formData = {
                 ...body,
-                Avatar: result.data.webContentLink
+                Avatar: result?.data?.webContentLink
               }
+              
               UserSchema.updateOne({ _id: req.params.id }, formData)
-                .then(() => res.redirect('/'))
+                .then((response) => {
+                  res.json(formData )
+                  // res.redirect('/')
+                } )
                 .catch(next => {
                 });
             })
         } else {
-          UserSchema.updateOne({ _id: req.params.id }, body)
+          const body1= {
+            ...body,
+            Avatar : "https://drive.google.com/uc?id=1txw0Dakn-jSwxtWGym8brACeBYCQiDOx&export=download"
+          }
+          UserSchema.updateOne({ _id: req.params.id },body1,
+          )
             .then(() => res.redirect('/'))
             .catch(next => {
             });
+            console.log("body1:" ,body1);
         }
       }
 }

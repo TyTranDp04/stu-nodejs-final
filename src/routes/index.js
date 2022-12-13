@@ -12,6 +12,7 @@ import {UserGroupController} from '../controllers/UserGroup.controllers.js'
 const router = express.Router();
 
 router.get("/user",Usermiddleware.verifyToken, UserController.get);
+router.get("/user/:id", UserController.getone);
 router.post("/user", upload.single("Avatar"), UserController.create);
 router.post("/user/:id", upload.single("img"), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
@@ -43,6 +44,7 @@ router.patch("/user-group/:id", UserGroupController.update);
 router.delete("/user-group/:id", UserGroupController.getDelete);
 
 router.get("/group", GroupController.get);
+router.get("/group/:id", GroupController.getoneGroup);
 router.post("/group", GroupController.create);
 router.patch("/group/:id", GroupController.update);
 router.delete("/group/:id", GroupController.getDelete);
