@@ -12,6 +12,9 @@ import multer from "multer";
 
 const router = express.Router();
 
+router.get("/user/:id", UserController.getone);
+router.post("/user", upload.single("Avatar"), UserController.create);
+router.post("/user/:id", upload.single("img"), UserController.update);
 router.get("/user", UserController.get);
 router.post("/user", multer().none(),UserController.create);
 router.patch("/user/:id", multer().none(), UserController.update);
@@ -55,6 +58,7 @@ router.post("/add-user-group", UserGroupController.addUserGroup);
 
 
 router.get("/group", GroupController.get);
+router.get("/group/:id", GroupController.getoneGroup);
 router.post("/group", GroupController.create);
 router.patch("/group/:id", GroupController.update);
 router.delete("/group/:id", GroupController.delete);

@@ -29,51 +29,19 @@ export const authController = {
   },
   //LOGIN
   loginUser: async (req, res) => {
+    const passwordInput = req.body.Password;
     try {
-      
       const user = await UserSchema.findOne({ Gmail: req.body.Gmail });
-      if (user ==="") {
-        return res.status(402).json({
-          statusCode: "402",
-          message: "UserName is empty. UserName required",
-          data: null,
-          success: false,
-        });
-      }
-      if (!user) {
+      const validPassword = user?.Password;
+      if (!user || passwordInput !== validPassword) {
         return res.status(400).json({
           statusCode: "400",
-          message: "Incorrect UserName",
+          message: "Username or Password is incorrect",
           data: null,
           success: false,
         });
-      }
-      const validPassword = await UserSchema.findOne({ Password: req.body.Password });
-      if (validPassword === "") {
-        return res.status(402).json({
-          statusCode: "402",
-          message: "Password is empty. Password required",
-          data: null,
-          success: false,
-        });
-      }
-      if (!validPassword) {
-        return res.status(400).json({
-          statusCode: "400",
-          message: "Incorrect Password",
-          data: null,
-          success: false,
-        });
-      }
-      if (user && validPassword) {
+      } else {
         const accessToken = authController.generateAccessToken(user);
-        // res.cookie("accessToken", accessToken, {
-        //   httpOnly: true,
-        //   secure: false,
-        //   path: "/",
-        //   sameSite: "strict",
-        // });
-        const { password, ...others } = user._doc;
         return res.status(200).json({
           statusCode: "200",
           message: "Login Success",
@@ -82,18 +50,18 @@ export const authController = {
             user: {
               id: user.id,
               Gmail: user.Gmail,
-              Name : user.Name,
-              Avatar : user.Avatar,
-              RoleId : user.RoleId,
+              Name: user.Name,
+              Avatar: user.Avatar,
+              RoleId: user.RoleId,
               GroupId: user.GroupId,
-              Password : user.Password
+              Password: user.Password
             },
           },
           success: true,
         });
       }
     } catch (err) {
-      return res.status(500).json(err);
+      return res.status(500).json(err)
     }
   },
 
@@ -104,8 +72,21 @@ export const authController = {
     return res.status(200).json("logOut!")
   },
 
+  // update(request, response) {
+  //   const id = request.params;
+  //   const updateObj = request;
+  //   ChangePasswordService.update({ _id: id }, { $set: updateObj })
+  //     .then((data) => {
+  //       Helper.responseJsonHandler(data, null, response);
+  //     })
+  //     .catch((error) => {
+  //       Helper.responseJsonHandler(null, error, response);
+  //     });
+  // },
+
   update(request, response) {
     const id = request.params;
+    // console.log("abc :" , request.body);
     const updateObj = request.body;
     ChangePasswordService.update({ _id: id }, { $set: updateObj })
       .then((data) => {
@@ -115,7 +96,9 @@ export const authController = {
         Helper.responseJsonHandler(null, error, response);
       });
   },
+
 };
+
 
 
 

@@ -20,6 +20,13 @@ export const GroupController = {
         })
       );
   },
+  getoneGroup(req,res,next){
+    GroupSchema.findOne({_id: req.params.id })
+    .then(user => {
+        res.json(user)
+    })
+    .catch(next)
+},
   create(req, res) {
     const { body } = req
     const courses = new GroupSchema(body)
