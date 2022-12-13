@@ -9,6 +9,7 @@ const TableDayOff = new Schema({
   UserId: { type: String },
   Reason: { type: String },
   Approve: { type: Array },
+  Name: { type: String },
 }, { timestamps: true });
 TableDayOff.plugin(softDeletePlugin);
 export const TableDayOffSchema = mongoose.model('db-dayoff', TableDayOff);

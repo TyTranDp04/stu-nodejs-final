@@ -7,27 +7,39 @@ import { Usermiddleware } from "../middlewares/User.middleware.js";
 import { authController } from "../controllers/Auth.controller.js";
 import {GroupController} from '../controllers/Group.controllers.js'
 import {UserGroupController} from '../controllers/UserGroup.controllers.js'
-
+import { NotificationController } from "../controllers/Notification.controller.js";
+import multer from "multer";
 
 const router = express.Router();
 
-router.get("/user",Usermiddleware.verifyToken, UserController.get);
 router.get("/user/:id", UserController.getone);
 router.post("/user", upload.single("Avatar"), UserController.create);
 router.post("/user/:id", upload.single("img"), UserController.update);
+router.get("/user", UserController.get);
+router.post("/user", multer().none(),UserController.create);
+router.patch("/user/:id", multer().none(), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
+router.get("/user-item/:id",UserController.showItem);
+router.get("/user/:key",UserController.searchUser);
 
 
-router.get('/dayoff',Usermiddleware.verifyToken, DayOffController.show);
-router.post('/dayoff',Usermiddleware.verifyToken, DayOffController.upload);
-router.get('/dayoff-soft',Usermiddleware.verifyToken, DayOffController.getDeleted);
-router.delete('/dayoff-soft/:id',Usermiddleware.verifyToken, DayOffController.softDelete);
-router.patch('/dayoff-soft/:id',Usermiddleware.verifyToken, DayOffController.restore);
-router.delete('/dayoff/:id',Usermiddleware.verifyToken, DayOffController.delete);
-router.get('/dayoff/:id',Usermiddleware.verifyToken, DayOffController.showItem);
-router.patch('/dayoff/:id',Usermiddleware.verifyToken, DayOffController.update);
-router.post('/approve',Usermiddleware.verifyToken, DayOffController.approve);
-router.post('/reject',Usermiddleware.verifyToken, DayOffController.reject);
+router.post('/dayoff', DayOffController.show);
+router.post('/newdayoff', DayOffController.upload);
+router.post('/dayoff-soft', DayOffController.getDeleted);
+router.delete('/dayoff-soft/:id', DayOffController.softDelete);
+router.patch('/dayoff-soft/:id', DayOffController.restore);
+router.delete('/dayoff/:id', DayOffController.delete);
+router.get('/dayoff/:id', DayOffController.showItem);
+router.patch('/dayoff/:id', DayOffController.update);
+router.post('/approve', DayOffController.approve);
+router.post('/reject', DayOffController.reject);
+
+router.get("/notification/:id", NotificationController.get);
+router.post("/delete-notification", NotificationController.update);
+router.post("/notification", NotificationController.upload);
+router.delete('/notification/:id', NotificationController.delete);
+
+
 
 
 router.get("/role", DpRoleController.get);
@@ -41,13 +53,15 @@ router.post("/auth/logout",Usermiddleware.verifyToken, authController.userLogout
 router.get("/user-group", UserGroupController.get);
 router.post("/user-group", UserGroupController.create);
 router.patch("/user-group/:id", UserGroupController.update);
-router.delete("/user-group/:id", UserGroupController.getDelete);
+router.post("/user-group/delete", UserGroupController.delete);
+router.post("/add-user-group", UserGroupController.addUserGroup);
+
 
 router.get("/group", GroupController.get);
 router.get("/group/:id", GroupController.getoneGroup);
 router.post("/group", GroupController.create);
 router.patch("/group/:id", GroupController.update);
-router.delete("/group/:id", GroupController.getDelete);
+router.delete("/group/:id", GroupController.delete);
 
 router.patch("/change-password/:_id", authController.update);
 
