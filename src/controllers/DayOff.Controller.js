@@ -233,11 +233,15 @@ export const DayOffController = {
       ...req.body,
       Status: 1,
       Name,
-      Approve: [UserId]
+      Approve: [UserId],
+      Type: 1,
+      Quantity: 1,
     } : {
       ...req.body,
       Status: 1,
       Name,
+      Type: 1,
+      Quantity: 1,
     }
     const courses = new TableDayOffSchema(formData)
     courses.save()
