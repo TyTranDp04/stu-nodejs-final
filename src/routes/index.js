@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.get("/user", UserController.get);
 router.post("/user", upload.single("Avatar"), UserController.create);
-router.patch("/user/:id", upload.single("Avatar"), UserController.update);
+router.post("/user/:id", upload.single("img"), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
 
 
@@ -29,8 +29,10 @@ router.post('/approve', DayOffController.approve);
 router.post('/reject', DayOffController.reject);
 
 router.get("/notification/:id", NotificationController.get);
-router.patch("/notification/:id", NotificationController.update);
+router.post("/delete-notification", NotificationController.update);
 router.post("/notification", NotificationController.upload);
+router.delete('/notification/:id', NotificationController.delete);
+
 
 
 

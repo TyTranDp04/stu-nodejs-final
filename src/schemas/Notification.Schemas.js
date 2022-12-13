@@ -12,7 +12,7 @@ const NotificationDayOff = new Schema({
   Reason: { type: String, require: true,},
   Type: { type: Number, require: true,},
   Quantity: { type: Number, require: true,},
-  IsRead: { type: Number },
+  UserRead: { type: Array },
 }, { timestamps: true });
 NotificationDayOff.plugin(softDeletePlugin);
 export const NotificationDayOffSchema = mongoose.model('db-notification', NotificationDayOff);
