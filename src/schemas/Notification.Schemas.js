@@ -10,7 +10,9 @@ const NotificationDayOff = new Schema({
   DayOffTo: { type: Date,  require: true, },
   UserId: { type: String, require: true, },
   Reason: { type: String, require: true,},
-  IsRead: { type: Number },
+  Type: { type: Number, require: true,},
+  Quantity: { type: Number, require: true,},
+  UserRead: { type: Array },
 }, { timestamps: true });
 NotificationDayOff.plugin(softDeletePlugin);
 export const NotificationDayOffSchema = mongoose.model('db-notification', NotificationDayOff);

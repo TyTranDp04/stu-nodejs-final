@@ -32,8 +32,10 @@ router.post('/approve', DayOffController.approve);
 router.post('/reject', DayOffController.reject);
 
 router.get("/notification/:id", NotificationController.get);
-router.patch("/notification/:id", NotificationController.update);
+router.post("/delete-notification", NotificationController.update);
 router.post("/notification", NotificationController.upload);
+router.delete('/notification/:id', NotificationController.delete);
+
 
 
 
@@ -48,12 +50,14 @@ router.post("/auth/logout",Usermiddleware.verifyToken, authController.userLogout
 router.get("/user-group", UserGroupController.get);
 router.post("/user-group", UserGroupController.create);
 router.patch("/user-group/:id", UserGroupController.update);
-router.delete("/user-group/:id", UserGroupController.getDelete);
+router.post("/user-group/delete", UserGroupController.delete);
+router.post("/add-user-group", UserGroupController.addUserGroup);
+
 
 router.get("/group", GroupController.get);
 router.post("/group", GroupController.create);
 router.patch("/group/:id", GroupController.update);
-router.delete("/group/:id", GroupController.getDelete);
+router.delete("/group/:id", GroupController.delete);
 
 router.patch("/change-password/:_id", authController.update);
 
