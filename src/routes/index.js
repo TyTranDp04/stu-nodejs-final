@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.get("/user/:id", UserController.getone);
 router.post("/user", upload.single("Avatar"), UserController.create);
-router.post("/user/:id", upload.single("img"), UserController.update);
+router.post("/user/:id", upload.single("img"), UserController.updateProfile);
 router.get("/user", UserController.get);
 router.post("/user", multer().none(),UserController.create);
 router.patch("/user/:id", multer().none(), UserController.update);
