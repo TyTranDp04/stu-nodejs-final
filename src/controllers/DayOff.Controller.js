@@ -7,7 +7,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 const LINK_URL_API = process.env.LINK_URL_API
 export const DayOffController = {
-  show(req, res, next) {
+  show(req, res) {
     const { UserId, RoleId, GroupId } = req.body
     const idGroup = []
     const idMaster = []
