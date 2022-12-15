@@ -8,13 +8,19 @@ import { authController } from "../controllers/Auth.controller.js";
 import {GroupController} from '../controllers/Group.controllers.js'
 import {UserGroupController} from '../controllers/UserGroup.controllers.js'
 import { NotificationController } from "../controllers/Notification.controller.js";
+import multer from "multer";
 
 const router = express.Router();
 
-router.get("/user", UserController.get);
+router.get("/user/:id", UserController.getone);
 router.post("/user", upload.single("Avatar"), UserController.create);
-router.post("/user/:id", upload.single("img"), UserController.update);
+router.post("/user/:id", upload.single("img"), UserController.updateProfile);
+router.get("/user", UserController.get);
+router.post("/user", multer().none(),UserController.create);
+router.patch("/user/:id", multer().none(), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
+router.get("/user-item/:id",UserController.showItem);
+router.get("/user/:key",UserController.searchUser);
 
 
 router.post('/dayoff', DayOffController.show);
@@ -52,6 +58,7 @@ router.post("/add-user-group", UserGroupController.addUserGroup);
 
 
 router.get("/group", GroupController.get);
+router.get("/group/:id", GroupController.getoneGroup);
 router.post("/group", GroupController.create);
 router.patch("/group/:id", GroupController.update);
 router.delete("/group/:id", GroupController.delete);
