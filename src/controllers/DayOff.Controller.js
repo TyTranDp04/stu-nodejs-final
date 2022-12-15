@@ -5,12 +5,9 @@ import axios from 'axios';
 import { UserGroupSchema } from '../schemas/UserGroup.schemas.js';
 import dotenv from 'dotenv'
 dotenv.config()
-const LINK_URL_API= process.env.LINK_URL_API
-
-
+const LINK_URL_API = process.env.LINK_URL_API
 export const DayOffController = {
-  // [GET]
-  show(req, res, next) {
+  show(req, res) {
     const { UserId, RoleId, GroupId } = req.body
     const idGroup = []
     const idMaster = []
@@ -26,16 +23,15 @@ export const DayOffController = {
                 return user.GroupId.includes(id)
               })
               masterId.map((e) => {
-                if (e.RoleId === "2") {
-                  idMaster.push(e._id)
+                if (e.RoleId === "2" && !idMaster.includes(e._id.toString())) {
+                  idMaster.push(e._id.toString())
                 }
               })
             })
             DpRoleSchema.find({ Id: RoleId })
               .then((data) => {
                 switch (data[0]?.RoleName) {
-                  case 'user':
-                    console.log('user')
+                  case 'Staff':
                     TableDayOffSchema.find({ UserId: UserId })
                       .then((data) =>
                         res.status(200).json({
@@ -53,7 +49,7 @@ export const DayOffController = {
                         })
                       );
                     break;
-                  case 'master':
+                  case 'Manager':
                     UserGroupSchema.find({})
                       .then((data) => {
                         let request = []
@@ -73,6 +69,7 @@ export const DayOffController = {
                               message: "Get data for master successfully",
                               data: Data,
                               success: true,
+                              idMaster: idMaster
                             })
                           })
                       })
@@ -83,7 +80,7 @@ export const DayOffController = {
                         })
                       );
                     break;
-                  case 'hr':
+                  case 'Admin':
                     TableDayOffSchema.find({})
                       .then((data) =>
                         res.status(200).json({
@@ -145,16 +142,16 @@ export const DayOffController = {
   update(req, res) {
     const { body } = req
     console.log(body);
-    const newRequest = body.Approve.includes(body.UserId)?{
+    const newRequest = body.Approve.includes(body.UserId) ? {
       ...body,
       Approve: [body.UserId],
       Status: 1
-    }:
-    {
-      ...body,
-      Approve: [],
-      Status: 1
-    }
+    } :
+      {
+        ...body,
+        Approve: [],
+        Status: 1
+      }
     TableDayOffSchema.updateOne({ _id: req.params.id }, newRequest)
       .then((data) =>
         res.status(200).json({
@@ -228,7 +225,7 @@ export const DayOffController = {
       }).catch((error) => error)
   },
   upload(req, res, next) {
-    const { UserId, DayOffFrom, DayOffTo, Reason, Name, RoleId } = req.body
+    const { UserId, DayOffFrom, DayOffTo, Reason, Name, RoleId, Type, Time, Quantity } = req.body
     const formData = RoleId === "2" ? {
       ...req.body,
       Status: 1,
@@ -248,10 +245,11 @@ export const DayOffController = {
           UserId,
           DayOffTo,
           Reason,
-          Type: 1,
-          Quantity: 1,
+          Type: Type,
+          Time: Time,
+          Quantity: Quantity,
         }
-        axios.post(LINK_URL_API+'/notification', formData)
+        axios.post(LINK_URL_API + '/notification', formData)
         res.status(200).json({
           statusCode: 200,
           message: "upload data successfully",
@@ -266,8 +264,8 @@ export const DayOffController = {
       );
   },
   getDeleted(req, res) {
-    TableDayOffSchema.findDeleted({UserId:req.body.UserId })
-      .then((data)=>{
+    TableDayOffSchema.findDeleted({ UserId: req.body.UserId })
+      .then((data) => {
         const newData = data.filter(function (user) {
           return user.UserId === req.body.UserId
         })
@@ -278,7 +276,7 @@ export const DayOffController = {
           data: newData,
           success: true,
         })
-      } 
+      }
       )
       .catch(() =>
         res.status(404).json({
@@ -318,8 +316,8 @@ export const DayOffController = {
               })
               masterId.map((e) => {
                 if (e.RoleId === "2") {
-                  if(idMaster.includes(e._id)){
-                  }else {
+                  if (idMaster.includes(e._id)) {
+                  } else {
                     idMaster.push(e._id)
                   }
                 }
@@ -331,7 +329,7 @@ export const DayOffController = {
                 const idAprove = data.Approve
                 idAprove.push(UserAproveId)
                 if (idAprove.length <= idMaster.length) {
-                  TableDayOffSchema.updateOne({ _id: RequestId }, { Approve: idAprove } )
+                  TableDayOffSchema.updateOne({ _id: RequestId }, { Approve: idAprove })
                     .then(() =>
                       res.status(200).json({
                         statusCode: 200,
