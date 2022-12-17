@@ -1,5 +1,4 @@
 import { UserSchema } from "../schemas/User.schemas.js";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Helper } from "../helper/index.js";
 import { ChangePasswordService } from "../services/ChangePassword.services.js";
@@ -74,6 +73,7 @@ export const authController = {
 
   update(request, response) {
     const id = request.params;
+    // console.log("abc :" , request.body);
     const updateObj = request.body;
     ChangePasswordService.update({ _id: id }, { $set: updateObj })
       .then((data) => {
@@ -83,7 +83,9 @@ export const authController = {
         Helper.responseJsonHandler(null, error, response);
       });
   },
+
 };
+
 
 
 

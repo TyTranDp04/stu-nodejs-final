@@ -17,8 +17,8 @@ export const DayOffController = {
       })
       .catch(next)
   },
-
-  show(req, res, next) {
+  
+  show(req, res) {
     const { UserId, RoleId, GroupId } = req.body
     const idGroup = []
     const idMaster = []
@@ -34,15 +34,15 @@ export const DayOffController = {
                 return user.GroupId.includes(id)
               })
               masterId.map((e) => {
-                if (e.RoleId === "2") {
-                  idMaster.push(e._id)
+                if (e.RoleId === "2" && !idMaster.includes(e._id.toString())) {
+                  idMaster.push(e._id.toString())
                 }
               })
             })
             DpRoleSchema.find({ Id: RoleId })
               .then((data) => {
                 switch (data[0]?.RoleName) {
-                  case 'user':
+                  case 'Staff':
                     TableDayOffSchema.find({ UserId: UserId })
                       .then((data) =>
                         res.status(200).json({
@@ -60,7 +60,7 @@ export const DayOffController = {
                         })
                       );
                     break;
-                  case 'master':
+                  case 'Manager':
                     UserGroupSchema.find({})
                       .then((data) => {
                         let request = []
@@ -80,6 +80,7 @@ export const DayOffController = {
                               message: "Get data for master successfully",
                               data: Data,
                               success: true,
+                              idMaster: idMaster
                             })
                           })
                       })
@@ -90,7 +91,7 @@ export const DayOffController = {
                         })
                       );
                     break;
-                  case 'hr':
+                  case 'Admin':
                     TableDayOffSchema.find({})
                       .then((data) =>
                         res.status(200).json({
@@ -234,7 +235,7 @@ export const DayOffController = {
       }).catch((error) => error)
   },
   upload(req, res, next) {
-    const { UserId, DayOffFrom, DayOffTo, Reason, Name, RoleId } = req.body
+    const { UserId, DayOffFrom, DayOffTo, Reason, Name, RoleId, Type, Time, Quantity } = req.body
     const formData = RoleId === "2" ? {
       ...req.body,
       Status: 1,
@@ -254,11 +255,11 @@ export const DayOffController = {
           UserId,
           DayOffTo,
           Reason,
-          Type: 1,
-          Quantity: 1,
+          Type: Type,
+          Time: Time,
+          Quantity: Quantity,
         }
-        const object = { ...formData, _id: data._id }
-        // axios.post(LINK_URL_API + '/notification', formData)
+        axios.post(LINK_URL_API + '/notification', formData)
         res.status(200).json({
           statusCode: 200,
           message: "upload data successfully",
