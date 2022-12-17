@@ -1,4 +1,4 @@
-import { TableDayOffSchema } from '../schemas/TableDayOff.schemas.js'
+import { TableDayOffSchema } from '../schemas/TableDayOff.Schemas.js'
 import { UserSchema } from '../schemas/User.schemas.js';
 import { DpRoleSchema } from '../schemas/TableRole.schemas.js';
 import axios from 'axios';
@@ -6,7 +6,18 @@ import { UserGroupSchema } from '../schemas/UserGroup.schemas.js';
 import dotenv from 'dotenv'
 dotenv.config()
 const LINK_URL_API = process.env.LINK_URL_API
+
+
 export const DayOffController = {
+  // [GET]
+  get(req, res, next) {
+    TableDayOffSchema.find({})
+      .then(user => {
+        res.json(user)
+      })
+      .catch(next)
+  },
+  
   show(req, res) {
     const { UserId, RoleId, GroupId } = req.body
     const idGroup = []
@@ -141,7 +152,6 @@ export const DayOffController = {
   },
   update(req, res) {
     const { body } = req
-    console.log(body);
     const newRequest = body.Approve.includes(body.UserId) ? {
       ...body,
       Approve: [body.UserId],
@@ -207,14 +217,14 @@ export const DayOffController = {
             );
         } else {
           TableDayOffSchema.softDelete({ _id: req.params.id })
-            .then((data) =>
+            .then((data) => {
               res.status(200).json({
                 statusCode: 200,
                 message: "Soft Delete data successfully",
                 data: data,
                 success: true,
               })
-            )
+            })
             .catch(() =>
               res.status(404).json({
                 success: false,
@@ -269,7 +279,6 @@ export const DayOffController = {
         const newData = data.filter(function (user) {
           return user.UserId === req.body.UserId
         })
-        console.log(newData)
         res.status(200).json({
           statusCode: 200,
           message: "Get deleted data successfully",
@@ -322,7 +331,6 @@ export const DayOffController = {
                   }
                 }
               })
-              console.log(idMaster)
             })
             TableDayOffSchema.findById({ _id: RequestId })
               .then((data) => {
