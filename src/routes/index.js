@@ -8,6 +8,7 @@ import { authController } from "../controllers/Auth.controller.js";
 import {GroupController} from '../controllers/Group.controllers.js'
 import {UserGroupController} from '../controllers/UserGroup.controllers.js'
 import { NotificationController } from "../controllers/Notification.controller.js";
+import { GoogleSheetController } from "../controllers/GoogleSheet.controller.js";
 
 const router = express.Router();
 
@@ -24,6 +25,7 @@ router.delete('/dayoff-soft/:id', DayOffController.softDelete);
 router.patch('/dayoff-soft/:id', DayOffController.restore);
 router.delete('/dayoff/:id', DayOffController.delete);
 router.get('/dayoff/:id', DayOffController.showItem);
+router.get('/dayoff', DayOffController.get);
 router.patch('/dayoff/:id', DayOffController.update);
 router.post('/approve', DayOffController.approve);
 router.post('/reject', DayOffController.reject);
@@ -55,5 +57,11 @@ router.patch("/group/:id", GroupController.update);
 router.delete("/group/:id", GroupController.getDelete);
 
 router.patch("/change-password/:_id", authController.update);
+
+router.get("/data", GoogleSheetController.get);
+router.get("/get-rows", GoogleSheetController.getRows);
+router.post("/add-rows", GoogleSheetController.addRows);
+router.post("/update-rows", GoogleSheetController.updateRows);
+router.get("/export", GoogleSheetController.exportDayoff);
 
 export default router;

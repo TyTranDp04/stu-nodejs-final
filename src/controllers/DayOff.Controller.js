@@ -1,15 +1,23 @@
-import { TableDayOffSchema } from '../schemas/TableDayOff.schemas.js'
+import { TableDayOffSchema } from '../schemas/TableDayOff.Schemas.js'
 import { UserSchema } from '../schemas/User.schemas.js';
 import { DpRoleSchema } from '../schemas/TableRole.schemas.js';
 import axios from 'axios';
 import { UserGroupSchema } from '../schemas/UserGroup.schemas.js';
 import dotenv from 'dotenv'
 dotenv.config()
-const LINK_URL_API= process.env.LINK_URL_API
+const LINK_URL_API = process.env.LINK_URL_API
 
 
 export const DayOffController = {
   // [GET]
+  get(req, res, next) {
+    TableDayOffSchema.find({})
+      .then(user => {
+        res.json(user)
+      })
+      .catch(next)
+  },
+
   show(req, res, next) {
     const { UserId, RoleId, GroupId } = req.body
     const idGroup = []
@@ -35,7 +43,6 @@ export const DayOffController = {
               .then((data) => {
                 switch (data[0]?.RoleName) {
                   case 'user':
-                    console.log('user')
                     TableDayOffSchema.find({ UserId: UserId })
                       .then((data) =>
                         res.status(200).json({
@@ -144,17 +151,16 @@ export const DayOffController = {
   },
   update(req, res) {
     const { body } = req
-    console.log(body);
-    const newRequest = body.Approve.includes(body.UserId)?{
+    const newRequest = body.Approve.includes(body.UserId) ? {
       ...body,
       Approve: [body.UserId],
       Status: 1
-    }:
-    {
-      ...body,
-      Approve: [],
-      Status: 1
-    }
+    } :
+      {
+        ...body,
+        Approve: [],
+        Status: 1
+      }
     TableDayOffSchema.updateOne({ _id: req.params.id }, newRequest)
       .then((data) =>
         res.status(200).json({
@@ -210,14 +216,14 @@ export const DayOffController = {
             );
         } else {
           TableDayOffSchema.softDelete({ _id: req.params.id })
-            .then((data) =>
+            .then((data) => {
               res.status(200).json({
                 statusCode: 200,
                 message: "Soft Delete data successfully",
                 data: data,
                 success: true,
               })
-            )
+            })
             .catch(() =>
               res.status(404).json({
                 success: false,
@@ -251,7 +257,8 @@ export const DayOffController = {
           Type: 1,
           Quantity: 1,
         }
-        axios.post(LINK_URL_API+'/notification', formData)
+        const object = { ...formData, _id: data._id }
+        // axios.post(LINK_URL_API + '/notification', formData)
         res.status(200).json({
           statusCode: 200,
           message: "upload data successfully",
@@ -266,19 +273,18 @@ export const DayOffController = {
       );
   },
   getDeleted(req, res) {
-    TableDayOffSchema.findDeleted({UserId:req.body.UserId })
-      .then((data)=>{
+    TableDayOffSchema.findDeleted({ UserId: req.body.UserId })
+      .then((data) => {
         const newData = data.filter(function (user) {
           return user.UserId === req.body.UserId
         })
-        console.log(newData)
         res.status(200).json({
           statusCode: 200,
           message: "Get deleted data successfully",
           data: newData,
           success: true,
         })
-      } 
+      }
       )
       .catch(() =>
         res.status(404).json({
@@ -318,20 +324,19 @@ export const DayOffController = {
               })
               masterId.map((e) => {
                 if (e.RoleId === "2") {
-                  if(idMaster.includes(e._id)){
-                  }else {
+                  if (idMaster.includes(e._id)) {
+                  } else {
                     idMaster.push(e._id)
                   }
                 }
               })
-              console.log(idMaster)
             })
             TableDayOffSchema.findById({ _id: RequestId })
               .then((data) => {
                 const idAprove = data.Approve
                 idAprove.push(UserAproveId)
                 if (idAprove.length <= idMaster.length) {
-                  TableDayOffSchema.updateOne({ _id: RequestId }, { Approve: idAprove } )
+                  TableDayOffSchema.updateOne({ _id: RequestId }, { Approve: idAprove })
                     .then(() =>
                       res.status(200).json({
                         statusCode: 200,
