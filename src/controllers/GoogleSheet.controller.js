@@ -80,21 +80,19 @@ export const GoogleSheetController = {
     const dataDayOff = await TableDayOffSchema.find({ DayOffFrom: daylist });
     const filterDayOff = dataDayOff.filter(item => item.Status === 2);
     const sortDayOff = filterDayOff.sort((a, b) => a.DayOffFrom - b.DayOffFrom);
-
     const mapDayOff = sortDayOff.map((item, index) => [
       index + 1,
       item.Name,
       item.Reason,
       format('dd-MM-yyyy', new Date(item?.DayOffFrom)),
       format('dd-MM-yyyy', new Date(item?.DayOffTo)),
-      item?.Type,
+      item?.Type === 1 ? "OFF" : "WFH",
       item?.Time,
-      item?.Quanlity,
+      item?.Quantity,
       item.Status = "Approve",
     ]);
-    const hearderRow = ["No", "Name", "Reason", "DayOffFrom", "DayOffTo", "Type", "Time", "Quanlity", "Status"];
+    const hearderRow = ["No", "Name", "Reason", "DayOffFrom", "DayOffTo", "Type", "Time", "Quantity", "Status"];
     const values = [[...hearderRow], ...mapDayOff];
-
     await googleSheets.spreadsheets.values.clear({
       auth,
       spreadsheetId,
@@ -134,13 +132,13 @@ export const GoogleSheetController = {
       const filterDayOff = dataDayOff.filter(item => item.Status === 2);
       const sortDayOff = filterDayOff.sort((a, b) => a.DayOffFrom - b.DayOffFrom);
       const values = sortDayOff.map(item => ({
-        Name: item.Name,
-        Reason: item.Reason,
-        DayOffFrom: item.DayOffFrom,
-        DayOffTo: item.DayOffTo,
+        Name: item?.Name,
+        Reason: item?.Reason,
+        DayOffFrom: item?.DayOffFrom,
+        DayOffTo: item?.DayOffTo,
         Type: item?.Type,
         Time: item?.Time,
-        Quanlity: item?.Quanlity,
+        Quantity: item?.Quantity,
         Status: "Approve",
       }));
 
