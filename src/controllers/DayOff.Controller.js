@@ -1,4 +1,4 @@
-import { TableDayOffSchema } from '../schemas/TableDayOff.schemas.js'
+import { TableDayOffSchema } from '../schemas/TableDayOff.Schemas.js'
 import { UserSchema } from '../schemas/User.schemas.js';
 import { DpRoleSchema } from '../schemas/TableRole.schemas.js';
 import axios from 'axios';
@@ -6,7 +6,18 @@ import { UserGroupSchema } from '../schemas/UserGroup.schemas.js';
 import dotenv from 'dotenv'
 dotenv.config()
 const LINK_URL_API = process.env.LINK_URL_API
+
+
 export const DayOffController = {
+  // [GET]
+  get(req, res, next) {
+    TableDayOffSchema.find({})
+      .then(user => {
+        res.json(user)
+      })
+      .catch(next)
+  },
+  
   show(req, res) {
     const { UserId, RoleId, GroupId } = req.body
     const idGroup = []
@@ -161,7 +172,6 @@ export const DayOffController = {
     }
     TableDayOffSchema.updateOne({ _id: req.params.id }, newRequest)
       .then((data) => {
-
         axios.post(LINK_URL_API + '/notification', newRequest)
         axios.post(LINK_URL_API + '/history-update', formData)
         res.status(200).json({

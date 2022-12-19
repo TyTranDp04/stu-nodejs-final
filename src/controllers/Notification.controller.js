@@ -102,6 +102,7 @@ export const NotificationController = {
   },
   upload(req, res) {
     const { body } = req
+    console.log('aaa', body)
     const idGroup = []
     const idMaster = []
     if (body?.Status === 4 || body?.Status === 3) {
@@ -111,16 +112,16 @@ export const NotificationController = {
       }
       const coursesNoti = new NotificationDayOffSchema(fromData)
       coursesNoti.save()
-      .then((data) => {
-        res.status(200).json({
-          statusCode: 200,
-          message: "Notification Slack successfully",
-          data: data,
-          success: true,
+        .then((data) => {
+          res.status(200).json({
+            statusCode: 200,
+            message: "Notification Slack successfully",
+            data: data,
+            success: true,
+          })
         })
-      })
-      .catch(() => { }
-      );
+        .catch(() => { }
+        );
     } else {
       UserGroupSchema.find({ UserId: body.UserId })
         .then((Data) => {
@@ -144,7 +145,15 @@ export const NotificationController = {
                 })
               })
               const fromData = {
-                ...body,
+                Status: body?.Status,
+                DayOffFrom: body?.DayOffFrom,
+                DayOffTo: body?.DayOffTo,
+                UserId: body?.UserId,
+                Reason: body?.Reason,
+                Name: body?.Name,
+                Time: body?.Time,
+                Quantity: body?.Quantity,
+                Type: body?.Type,
                 UserRead: idMaster
               }
               const coursesNoti = new NotificationDayOffSchema(fromData)

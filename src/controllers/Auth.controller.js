@@ -1,5 +1,4 @@
 import { UserSchema } from "../schemas/User.schemas.js";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Helper } from "../helper/index.js";
 import { ChangePasswordService } from "../services/ChangePassword.services.js";
@@ -33,6 +32,7 @@ export const authController = {
     try {
       const user = await UserSchema.findOne({ Gmail: req.body.Gmail });
       const validPassword = user?.Password;
+
       if (!user || passwordInput !== validPassword) {
         return res.status(400).json({
           statusCode: "400",
@@ -65,24 +65,11 @@ export const authController = {
     }
   },
 
-
   //log out
   userLogout: async (req, res) => {
     res.clearCookie("accessToken");
     return res.status(200).json("logOut!")
   },
-
-  // update(request, response) {
-  //   const id = request.params;
-  //   const updateObj = request;
-  //   ChangePasswordService.update({ _id: id }, { $set: updateObj })
-  //     .then((data) => {
-  //       Helper.responseJsonHandler(data, null, response);
-  //     })
-  //     .catch((error) => {
-  //       Helper.responseJsonHandler(null, error, response);
-  //     });
-  // },
 
   update(request, response) {
     const id = request.params;
