@@ -13,25 +13,51 @@ const LINK_URL_API = process.env.LINK_URL_API
 export const NotificationController = {
   get(req, res, next) {
     const masterId = req.params.id
-    NotificationDayOffSchema.find({})
-      .then(data => {
-        const dataNoti = data.filter(function (noti) {
-          return noti.UserRead.includes(masterId)
-        })
-        res.json({
-          statusCode: 200,
-          message: "Get data for master successfully",
-          data: dataNoti,
-          success: true,
-        })
-      }
-      )
-      .catch(() =>
-        res.status(404).json({
-          success: false,
-          message: `Can't find data.`,
-        })
-      );
+    UserSchema.find({ _id: req.params.id })
+      .then((data) => {
+        switch (data[0]?.RoleId) {
+          case '1':
+            NotificationDayOffSchema.find({ UserId: req.params.id })
+              .then((data) =>
+                res.status(200).json({
+                  statusCode: 200,
+                  message: "Get data for user successfully",
+                  data: data,
+                  success: true,
+                })
+              )
+              .catch(() =>
+                res.status(404).json({
+                  success: false,
+                  message: `Can't find id: ${req.params.id}.`,
+                })
+              );
+            break;
+          case '2':
+            NotificationDayOffSchema.find({})
+              .then(data => {
+                const dataNoti = data.filter(function (noti) {
+                  return noti.UserRead.includes(masterId)
+                })
+                res.json({
+                  statusCode: 200,
+                  message: "Get data for master successfully",
+                  data: dataNoti,
+                  success: true,
+                })
+              }
+              )
+              .catch(() =>
+                res.status(404).json({
+                  success: false,
+                  message: `Can't find data.`,
+                })
+              );
+            break;
+        }
+
+      })
+
   },
   update(req, res, next) {
     const { UserRead, NotifyId } = req.body;
@@ -74,58 +100,76 @@ export const NotificationController = {
       })
       .catch(next)
   },
-  upload(req, res, next) {
+  upload(req, res) {
     const { body } = req
     const idGroup = []
     const idMaster = []
-    UserGroupSchema.find({ UserId: body.UserId })
-      .then((Data) => {
-        Data.map((e) => {
-          idGroup.push(e.GroupId)
+    if (body?.Status === 4 || body?.Status === 3) {
+      const fromData = {
+        ...body,
+        UserRead: body?.UserId
+      }
+      const coursesNoti = new NotificationDayOffSchema(fromData)
+      coursesNoti.save()
+      .then((data) => {
+        res.status(200).json({
+          statusCode: 200,
+          message: "Notification Slack successfully",
+          data: data,
+          success: true,
         })
-        UserSchema.find({})
-          .then((data) => {
-            idGroup.map((id) => {
-              const masterId = data.filter(function (user) {
-                return user.GroupId.includes(id)
-              })
-              masterId.map((e) => {
-                if (e.RoleId === "2") {
-                  if (idMaster.includes(e._id.toString())) {
-                  } else {
-                    const idSlice = e?._id.toString()
-                    idMaster.push(idSlice)
+      })
+      .catch(() => { }
+      );
+    } else {
+      UserGroupSchema.find({ UserId: body.UserId })
+        .then((Data) => {
+          Data.map((e) => {
+            idGroup.push(e.GroupId)
+          })
+          UserSchema.find({})
+            .then((data) => {
+              idGroup.map((id) => {
+                const masterId = data.filter(function (user) {
+                  return user.GroupId.includes(id)
+                })
+                masterId.map((e) => {
+                  if (e.RoleId === "2") {
+                    if (idMaster.includes(e._id.toString())) {
+                    } else {
+                      const idSlice = e?._id.toString()
+                      idMaster.push(idSlice)
+                    }
                   }
-                }
-              })     
-            })
-            console.log(idMaster)
-            const fromData = {
-              ...body,
-              UserRead: idMaster
-            }
-            const coursesNoti = new NotificationDayOffSchema(fromData)
-            coursesNoti.save()
-              .then((data) => {
-                // SlackBot(LINK_URL_CHANNEL_DAYOFF,body)
-                // SlackBot(LINK_URL_CHANNEL_HR,body)
-                // SlackBot(LINK_URL_CHANNEL_GENERAL,body)
-                res.status(200).json({
-                  statusCode: 200,
-                  message: "Notification Slack successfully",
-                  data: data,
-                  success: true,
                 })
               })
-              .catch(() => { }
-              );
+              const fromData = {
+                ...body,
+                UserRead: idMaster
+              }
+              const coursesNoti = new NotificationDayOffSchema(fromData)
+              coursesNoti.save()
+                .then((data) => {
+                  // SlackBot(LINK_URL_CHANNEL_DAYOFF,body)
+                  // SlackBot(LINK_URL_CHANNEL_HR,body)
+                  // SlackBot(LINK_URL_CHANNEL_GENERAL,body)
+                  res.status(200).json({
+                    statusCode: 200,
+                    message: "Notification Slack successfully",
+                    data: data,
+                    success: true,
+                  })
+                })
+                .catch(() => { }
+                );
+            })
+        }).catch(() =>
+          res.status(404).json({
+            success: false,
+            message: `Can't find id: ${body.UserId}.`,
           })
-      }).catch(() =>
-        res.status(404).json({
-          success: false,
-          message: `Can't find id: ${body.UserId}.`,
-        })
-      );
+        );
+    }
   }
 }
 
