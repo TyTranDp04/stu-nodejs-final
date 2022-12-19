@@ -10,6 +10,7 @@ import {UserGroupController} from '../controllers/UserGroup.controllers.js'
 import { NotificationController } from "../controllers/Notification.controller.js";
 import { GoogleSheetController } from "../controllers/GoogleSheet.controller.js";
 import multer from "multer";
+import { HistoryController } from "../controllers/History.controller.js";
 
 const router = express.Router();
 
@@ -26,15 +27,20 @@ router.get("/user/:key",UserController.searchUser);
 
 router.post('/dayoff', DayOffController.show);
 router.post('/newdayoff', DayOffController.upload);
-router.post('/dayoff-soft', DayOffController.getDeleted);
-router.delete('/dayoff-soft/:id', DayOffController.softDelete);
-router.patch('/dayoff-soft/:id', DayOffController.restore);
 router.delete('/dayoff/:id', DayOffController.delete);
 router.get('/dayoff/:id', DayOffController.showItem);
 router.get('/dayoff', DayOffController.get);
 router.patch('/dayoff/:id', DayOffController.update);
 router.post('/approve', DayOffController.approve);
 router.post('/reject', DayOffController.reject);
+router.post('/request-change', DayOffController.requestChange);
+router.post('/revert', DayOffController.revert);
+
+router.get('/history/:id', HistoryController.get);
+router.post('/history', HistoryController.upload);
+router.post('/history-update', HistoryController.updateDayOff);
+
+
 
 router.get("/notification/:id", NotificationController.get);
 router.post("/delete-notification", NotificationController.update);

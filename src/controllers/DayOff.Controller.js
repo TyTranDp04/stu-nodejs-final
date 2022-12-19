@@ -152,9 +152,9 @@ export const DayOffController = {
   },
   update(req, res) {
     const { body } = req
-    const newRequest = body.Approve.includes(body.UserId) ? {
+    const newRequest = body?.Approve?.includes(body?.UserId) ? {
       ...body,
-      Approve: [body.UserId],
+      Approve: [body?.UserId],
       Status: 1
     } :
       {
@@ -162,15 +162,25 @@ export const DayOffController = {
         Approve: [],
         Status: 1
       }
+    const formData = {
+      RequestId: body?._id,
+      UserActionId: body?.UserId,
+      Status: 1,
+      Parent: [
+        newRequest,
+      ]
+    }
     TableDayOffSchema.updateOne({ _id: req.params.id }, newRequest)
-      .then((data) =>
+      .then((data) => {
+        axios.post(LINK_URL_API + '/notification', newRequest)
+        axios.post(LINK_URL_API + '/history-update', formData)
         res.status(200).json({
           statusCode: 200,
           message: "Update data successfully",
           data: data,
           success: true,
         })
-      )
+      })
       .catch(() =>
         res.status(404).json({
           success: false,
@@ -196,46 +206,8 @@ export const DayOffController = {
         })
       );
   },
-  softDelete(req, res, next) {
-    TableDayOffSchema.findOne({ _id: req.params.id })
-      .then((data) => {
-        if (data.Status === 3) {
-          TableDayOffSchema.deleteOne({ _id: req.params.id })
-            .then((data) =>
-              res.status(200).json({
-                statusCode: 200,
-                message: "Soft Delete data successfully",
-                data: data,
-                success: true,
-              })
-            )
-            .catch(() =>
-              res.status(404).json({
-                success: false,
-                message: `Can't find id: ${req.params.id}.`,
-              })
-            );
-        } else {
-          TableDayOffSchema.softDelete({ _id: req.params.id })
-            .then((data) => {
-              res.status(200).json({
-                statusCode: 200,
-                message: "Soft Delete data successfully",
-                data: data,
-                success: true,
-              })
-            })
-            .catch(() =>
-              res.status(404).json({
-                success: false,
-                message: `Can't find id: ${req.params.id}.`,
-              })
-            );
-        }
-      }).catch((error) => error)
-  },
   upload(req, res, next) {
-    const { UserId, DayOffFrom, DayOffTo, Reason, Name, RoleId, Type, Time, Quantity } = req.body
+    const { UserId, Name, RoleId } = req.body
     const formData = RoleId === "2" ? {
       ...req.body,
       Status: 1,
@@ -246,20 +218,20 @@ export const DayOffController = {
       Status: 1,
       Name,
     }
+
     const courses = new TableDayOffSchema(formData)
     courses.save()
       .then((data) => {
         const formData = {
-          Name,
-          DayOffFrom,
-          UserId,
-          DayOffTo,
-          Reason,
-          Type: Type,
-          Time: Time,
-          Quantity: Quantity,
+          RequestId: data?._id,
+          UserActionId: data?.UserId,
+          Status: data?.Status,
+          Parent: [
+            data,
+          ]
         }
-        axios.post(LINK_URL_API + '/notification', formData)
+        axios.post(LINK_URL_API + '/notification', data)
+        axios.post(LINK_URL_API + '/history', formData)
         res.status(200).json({
           statusCode: 200,
           message: "upload data successfully",
@@ -273,45 +245,18 @@ export const DayOffController = {
         })
       );
   },
-  getDeleted(req, res) {
-    TableDayOffSchema.findDeleted({ UserId: req.body.UserId })
-      .then((data) => {
-        const newData = data.filter(function (user) {
-          return user.UserId === req.body.UserId
-        })
-        res.status(200).json({
-          statusCode: 200,
-          message: "Get deleted data successfully",
-          data: newData,
-          success: true,
-        })
-      }
-      )
-      .catch(() =>
-        res.status(404).json({
-          success: false,
-          message: `Can't find.`,
-        })
-      );
-  },
-  restore(request, response) {
-    const id = request.params.id;
-    TableDayOffSchema.restore({ _id: id })
-      .then(() => response.status(200).json({
-        statusCode: 200,
-        message: "Restore data successfully",
-        success: true
-      }))
-      .catch(() => response.status(404).json({
-        success: false,
-        message: `Can't find id: ${id}.`
-      }));
-  },
   approve(req, res, next) {
-    const { RequestId, UserId, UserAproveId, Master } = req.body
+    const { RequestId, UserId, UserActionId, Master } = req.body
     const idGroup = []
     const idMaster = []
-
+    const formData = {
+      RequestId: RequestId,
+      UserActionId: UserActionId,
+      Status: 2,
+      Parent: [
+      ]
+    }
+    axios.post(LINK_URL_API + '/history', formData)
     UserGroupSchema.find({ UserId: UserId })
       .then((Data) => {
         Data.map((e) => {
@@ -335,7 +280,7 @@ export const DayOffController = {
             TableDayOffSchema.findById({ _id: RequestId })
               .then((data) => {
                 const idAprove = data.Approve
-                idAprove.push(UserAproveId)
+                idAprove.push(UserActionId)
                 if (idAprove.length <= idMaster.length) {
                   TableDayOffSchema.updateOne({ _id: RequestId }, { Approve: idAprove })
                     .then(() =>
@@ -372,8 +317,24 @@ export const DayOffController = {
 
   },
   reject(req, res, next) {
-    const { RequestId } = req.body
-    TableDayOffSchema.updateOne({ _id: RequestId }, { Status: 3 })
+    const { body } = req
+    const newData = {
+      RequestId: body?._id,
+      Status: 3,
+      DayOffFrom: body?.DayOffFrom,
+      DayOffTo: body?.DayOffTo,
+      UserId: body?.UserId,
+      Reason: body?.Reason,
+      Name: body?.Name,
+      Time: body?.Time,
+      Quantity: body?.Quantity,
+      Type: body?.Type,
+      ReasonChange: body?.ReasonChange,
+      UserActionId: body?.UserActionId,
+    }
+    axios.post(LINK_URL_API + '/history', newData)
+    axios.post(LINK_URL_API + '/notification', newData)
+    TableDayOffSchema.updateOne({ _id: body?._id}, { Status: 3 })
       .then(() =>
         res.status(200).json({
           statusCode: 200,
@@ -389,5 +350,83 @@ export const DayOffController = {
         })
       );
   },
+  requestChange(req, res) {
+    const { body } = req
+    const newData = {
+      RequestId: body?._id,
+      Status: 4,
+      DayOffFrom: body?.DayOffFrom,
+      DayOffTo: body?.DayOffTo,
+      UserId: body?.UserId,
+      Reason: body?.Reason,
+      Name: body?.Name,
+      Time: body?.Time,
+      Quantity: body?.Quantity,
+      Type: body?.Type,
+      ReasonChange: body?.ReasonChange,
+      UserActionId: body?.UserActionId,
+    }
+    TableDayOffSchema.updateOne({ _id: body._id }, { Status: 4 })
+      .then(() => {
+        axios.post(LINK_URL_API + '/notification', newData)
+        axios.post(LINK_URL_API + '/history', newData)
+        res.status(200).json({
+          statusCode: 200,
+          message: "Request change successfully",
+          data: newData,
+          success: true,
+        })
+      })
+      .catch(() =>
+        res.status(404).json({
+          success: false,
+          message: `Can't find id: ${body?._id}.`,
+        })
+      );
+  },
+  revert(req, res) {
+    const { body } = req
+    const newData = {
+      RequestId: body?._id,
+      Status: 5,
+      DayOffFrom: body?.DayOffFrom,
+      DayOffTo: body?.DayOffTo,
+      UserId: body?.UserId,
+      Reason: body?.Reason,
+      Name: body?.Name,
+      Time: body?.Time,
+      Quantity: body?.Quantity,
+      Type: body?.Type,
+      ReasonChange: body?.ReasonChange,
+      UserActionId: body?.UserId,
+    }
+    const today = new Date
+    const dayOff = new Date(body?.DayOffFrom)
+    const time = (((dayOff - today) / 360 / 24 / 10000) + 1)
+    if (time > 1) {
+      TableDayOffSchema.updateOne({ _id: body._id }, { Status: 5 })
+        .then(() => {
+          axios.post(LINK_URL_API + '/history', newData)
+          axios.post(LINK_URL_API + '/notification', newData)
+          res.status(200).json({
+            statusCode: 200,
+            message: "Revert successfully",
+            data: newData,
+            success: true,
+          })
+        })
+        .catch(() =>
+          res.status(404).json({
+            success: false,
+            message: `Can't find id: ${body?._id}.`,
+          })
+        );
+    } else {
+      res.status(404).json({
+        success: false,
+        message: `over day.`,
+      })
+    }
+  }
 }
 
