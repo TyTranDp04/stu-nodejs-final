@@ -14,7 +14,7 @@ import { HistoryController } from "../controllers/History.controller.js";
 
 const router = express.Router();
 
-router.get("/user/:id", UserController.getone);
+router.get("/user-getone/:id", UserController.getone);
 router.post("/user", upload.single("Avatar"), UserController.create);
 router.post("/user/:id", upload.single("img"), UserController.updateProfile);
 router.get("/user", UserController.get);
@@ -23,6 +23,7 @@ router.patch("/user/:id", multer().none(), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
 router.get("/user-item/:id",UserController.showItem);
 router.get("/user/:key",UserController.searchUser);
+router.delete("/user-group/:id", UserController.DeleteGroupuser);
 
 
 router.post('/dayoff', DayOffController.show);
