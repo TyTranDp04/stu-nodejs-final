@@ -3,6 +3,7 @@ import { UserSchema } from '../schemas/User.schemas.js';
 import { DpRoleSchema } from '../schemas/TableRole.schemas.js';
 import axios from 'axios';
 import { UserGroupSchema } from '../schemas/UserGroup.schemas.js';
+import { checkMaster } from '../services/CheckMaster.services.js';
 import dotenv from 'dotenv'
 dotenv.config()
 const LINK_URL_API = process.env.LINK_URL_API
@@ -11,7 +12,7 @@ const LINK_URL_API = process.env.LINK_URL_API
 export const DayOffController = {
   // [GET]
   get(req, res, next) {
-    TableDayOffSchema.find({UserId: req.params.id})
+    TableDayOffSchema.find({ UserId: req.params.id })
       .then(data => {
         res.json(data)
       })
@@ -190,6 +191,7 @@ export const DayOffController = {
 
   },
   delete(req, res, next) {
+
     TableDayOffSchema.deleteOne({ _id: req.params.id })
       .then((data) =>
         res.status(200).json({
@@ -208,42 +210,40 @@ export const DayOffController = {
   },
   upload(req, res, next) {
     const { UserId, Name, RoleId } = req.body
-    const formData = RoleId === "2" ? {
-      ...req.body,
-      Status: 1,
-      Name,
-      Approve: [UserId]
-    } : {
-      ...req.body,
-      Status: 1,
-      Name,
+    if (RoleId === '2') {
+      (checkMaster(UserId, req, Name, res))
+    } else {
+      const formData = {
+        ...req.body,
+        Status: 1,
+        Name,
+      }
+      const courses = new TableDayOffSchema(formData)
+      courses.save()
+        .then((data) => {
+          const formData = {
+            RequestId: data?._id,
+            UserActionId: data?.UserId,
+            Status: data?.Status,
+            Parent: [
+              data,
+            ]
+          }
+          axios.post(LINK_URL_API + '/notification', data)
+          axios.post(LINK_URL_API + '/history', formData)
+          res.status(200).json({
+            statusCode: 200,
+            message: "upload data successfully",
+            data: data,
+            success: true,
+          })
+        }).catch(() =>
+          res.status(404).json({
+            success: false,
+            message: `Can't find id: ${UserId}.`,
+          })
+        );
     }
-
-    const courses = new TableDayOffSchema(formData)
-    courses.save()
-      .then((data) => {
-        const formData = {
-          RequestId: data?._id,
-          UserActionId: data?.UserId,
-          Status: data?.Status,
-          Parent: [
-            data,
-          ]
-        }
-        axios.post(LINK_URL_API + '/notification', data)
-        axios.post(LINK_URL_API + '/history', formData)
-        res.status(200).json({
-          statusCode: 200,
-          message: "upload data successfully",
-          data: data,
-          success: true,
-        })
-      }).catch(() =>
-        res.status(404).json({
-          success: false,
-          message: `Can't find id: ${UserId}.`,
-        })
-      );
   },
   approve(req, res, next) {
     const { RequestId, UserId, UserActionId, Master } = req.body
@@ -291,12 +291,8 @@ export const DayOffController = {
                         success: true,
                       })
                     )
-                    .catch(() =>
-                      res.status(404).json({
-                        success: false,
-                        message: `Can't find id: ${RequestId}.`,
-                      })
-                    );
+                    .catch(
+                  );
                   if (idAprove.length === idMaster.length) {
                     TableDayOffSchema.updateOne({ _id: RequestId }, { Status: 2 })
                       .then((data) => {
@@ -334,7 +330,7 @@ export const DayOffController = {
     }
     axios.post(LINK_URL_API + '/history', newData)
     axios.post(LINK_URL_API + '/notification', newData)
-    TableDayOffSchema.updateOne({ _id: body?._id}, { Status: 3 })
+    TableDayOffSchema.updateOne({ _id: body?._id }, { Status: 3 })
       .then(() =>
         res.status(200).json({
           statusCode: 200,
