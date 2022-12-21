@@ -62,56 +62,75 @@ export const GoogleSheetController = {
   },
 
   updateRows: async (req, res) => {
-    const { googleSheets, auth, spreadsheetId } = await getAuthSheets();
+    try {
+      const dayOffFrom = req.query.DayOffFrom;
+      const dayOffTo = req.query.DayOffTo;
+      const idGoogleSheets= req.query.idGoogleSheets;
 
-    const dayOffFrom = req.query.DayOffFrom;
-    const dayOffTo = req.query.DayOffTo;
+      const auth = new google.auth.GoogleAuth({
+        keyFile: "credentials.json",
+        scopes: "https://www.googleapis.com/auth/spreadsheets",
+      });
 
-    const getDaysArray = (start, end) => {
-      for (var arr = [], dt = new Date(start); dt <= new Date(end); dt.setDate(dt.getDate() + 1)) {
-        arr.push(new Date(dt));
-      }
-      return arr;
-    };
+      const client = await auth.getClient();
 
-    const daylist = getDaysArray(new Date(dayOffFrom), new Date(dayOffTo));
-    daylist.map((v) => v.toISOString().slice(0, 10)).join("");
+      const googleSheets = google.sheets({
+        version: "v4",
+        auth: client,
+      });
+      const spreadsheetId = idGoogleSheets;
 
-    const dataDayOff = await TableDayOffSchema.find({ DayOffFrom: daylist });
-    const filterDayOff = dataDayOff.filter(item => item.Status === 2);
-    const sortDayOff = filterDayOff.sort((a, b) => a.DayOffFrom - b.DayOffFrom);
-    const mapDayOff = sortDayOff.map((item, index) => [
-      index + 1,
-      item.Name,
-      item.Reason,
-      format('dd-MM-yyyy', new Date(item?.DayOffFrom)),
-      format('dd-MM-yyyy', new Date(item?.DayOffTo)),
-      item?.Type === 1 ? "OFF" : "WFH",
-      item?.Time,
-      item?.Quantity,
-      item.Status = "Approve",
-    ]);
-    const hearderRow = ["No", "Name", "Reason", "DayOffFrom", "DayOffTo", "Type", "Time", "Quantity", "Status"];
-    const values = [[...hearderRow], ...mapDayOff];
-    await googleSheets.spreadsheets.values.clear({
-      auth,
-      spreadsheetId,
-      range: "Sheet1",
-    });
+      const getDaysArray = (start, end) => {
+        for (var arr = [], dt = new Date(start); dt <= new Date(end); dt.setDate(dt.getDate() + 1)) {
+          arr.push(new Date(dt));
+        }
+        return arr;
+      };
 
-    const updateValue = await googleSheets.spreadsheets.values.batchUpdate({
-      auth,
-      spreadsheetId,
-      resource: {
-        valueInputOption: 'USER_ENTERED',
-        data: [{
-          range: "Sheet1",
-          values: values,
-        }],
-      }
-    });
+      const daylist = getDaysArray(new Date(dayOffFrom), new Date(dayOffTo));
+      daylist.map((v) => v.toISOString().slice(0, 10)).join("");
+      const dataDayOff = await TableDayOffSchema.find({ DayOffFrom: daylist });
+      const filterDayOff = dataDayOff.filter(item => item.Status === 2);
+      const sortDayOff = filterDayOff.sort((a, b) => a.DayOffFrom - b.DayOffFrom);
+      const mapDayOff = sortDayOff.map((item, index) => [
+        index + 1,
+        item.Name,
+        item.Reason,
+        format('dd-MM-yyyy', new Date(item?.DayOffFrom)),
+        format('dd-MM-yyyy', new Date(item?.DayOffTo)),
+        item?.Type === 1 ? "OFF" : "WFH",
+        item?.Time,
+        item?.Quantity,
+        item.Status = "Approve",
+      ]);
+      const hearderRow = ["No", "Name", "Reason", "DayOffFrom", "DayOffTo", "Type", "Time", "Quantity", "Status"];
+      const values = [[...hearderRow], ...mapDayOff];
+      await googleSheets.spreadsheets.values.clear({
+        auth,
+        spreadsheetId,
+        range: "Sheet1",
+      });
 
-    res.send(updateValue.data)
+      const updateValue = await googleSheets.spreadsheets.values.batchUpdate({
+        auth,
+        spreadsheetId,
+        resource: {
+          valueInputOption: 'USER_ENTERED',
+          data: [{
+            range: "Sheet1",
+            values: values,
+          }],
+        }
+      });
+
+      res.send(updateValue.data)
+    } catch (error) {
+      res.status(404).send({
+        status: "Error",
+        message: "Your ID Google Sheets is invalid",
+      });
+    }
+
   },
 
   exportDayoff: async (req, res, next) => {
