@@ -1,5 +1,6 @@
-import { UserSchema } from "../schemas/User.schemas.js";
-import { that } from "../middlewares/Upload.model.js";
+import { UserSchema } from "../schemas/User.schemas.js"
+import { that } from "../middlewares/Upload.model.js"
+import { UserGroupSchema } from "../schemas/UserGroup.schemas.js";
 
 export const UserController = {
   searchUser: async (req, res) => {
@@ -20,29 +21,27 @@ export const UserController = {
       })
       .catch(next);
   },
-  getone(req,res,next){
-    UserSchema.findOne({_id: req.params.id })
-    .then(user => {
+  getone(req, res, next) {
+    UserSchema.findOne({ _id: req.params.id })
+      .then(user => {
         res.json(user)
-    })
-    .catch(next)
+      })
+      .catch(next)
   },
   create(req, res) {
     const { body } = req;
-    console.log(body);
     const data = {
       ...body,
-      Password: "12345678",
-      Avatar:
-        "https://vnn-imgs-a1.vgcloud.vn/image1.ictnews.vn/_Files/2020/03/17/trend-avatar-1.jpg",
-      
+      Password: "123456",
+      Avatar: null
+        // "https://vnn-imgs-a1.vgcloud.vn/image1.ictnews.vn/_Files/2020/03/17/trend-avatar-1.jpg",
+
     };
     const courses = new UserSchema(data);
-    console.log(courses);
     courses
       .save()
       .then(() => res.redirect("/"))
-      .catch((err) => {});
+      .catch((err) => { });
   },
   getDelete(req, res, next) {
     UserSchema.deleteOne({ _id: req.params.id })
@@ -51,6 +50,18 @@ export const UserController = {
       })
       .catch(next);
   },
+  DeleteGroupuser(req, res, next) {
+    UserSchema.deleteOne({ _id: req.params.id })
+    .then((course) => {
+      UserGroupSchema.deleteMany({ UserId: req.params.id })
+      .then((course) => {
+        res.json("ok ");
+      })
+      .catch(next); 
+    })
+    .catch(next);
+  },
+
   showItem(req, res, next) {
     UserSchema.findByIdAndUpdate({ _id: req.params.id })
       .then((data) =>
@@ -78,12 +89,12 @@ export const UserController = {
         };
         UserSchema.updateOne({ _id: req.params.id }, formData)
           .then(() => res.redirect("/"))
-          .catch((next) => {});
+          .catch((next) => { });
       });
     } else {
       UserSchema.updateOne({ _id: req.params.id }, body)
         .then(() => res.redirect("/"))
-        .catch((next) => {});
+        .catch((next) => { });
     }
   },
   updateProfile(req, res, next) {
@@ -91,31 +102,27 @@ export const UserController = {
     if (file) {
       that.uploadFileDriver({ shared: true }, file)
         .then(result => {
-          // console.log(result);
           const formData = {
             ...body,
             Avatar: result?.data?.webContentLink
           }
-          
+
           UserSchema.updateOne({ _id: req.params.id }, formData)
             .then((response) => {
-              res.json(formData )
-              // res.redirect('/')
-            } )
+              res.json(formData)
+            })
             .catch(next => {
             });
         })
     } else {
-      const body1= {
+      const body1 = {
         ...body,
-        Avatar : "https://drive.google.com/uc?id=1txw0Dakn-jSwxtWGym8brACeBYCQiDOx&export=download"
+        Avatar: "https://drive.google.com/uc?id=1txw0Dakn-jSwxtWGym8brACeBYCQiDOx&export=download"
       }
-      UserSchema.updateOne({ _id: req.params.id },body1,
-      )
+      UserSchema.updateOne({ _id: req.params.id }, body1)
         .then(() => res.redirect('/'))
         .catch(next => {
         });
-        console.log("body1:" ,body1);
     }
   }
 };
