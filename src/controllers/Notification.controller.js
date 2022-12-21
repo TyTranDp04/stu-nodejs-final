@@ -12,51 +12,26 @@ const LINK_URL_API = process.env.LINK_URL_API
 
 export const NotificationController = {
   get(req, res, next) {
-    const masterId = req.params.id
-    UserSchema.find({ _id: req.params.id })
-      .then((data) => {
-        switch (data[0]?.RoleId) {
-          case '1':
-            NotificationDayOffSchema.find({ UserId: req.params.id })
-              .then((data) =>
-                res.status(200).json({
-                  statusCode: 200,
-                  message: "Get data for user successfully",
-                  data: data,
-                  success: true,
-                })
-              )
-              .catch(() =>
-                res.status(404).json({
-                  success: false,
-                  message: `Can't find id: ${req.params.id}.`,
-                })
-              );
-            break;
-          case '2':
-            NotificationDayOffSchema.find({})
-              .then(data => {
-                const dataNoti = data.filter(function (noti) {
-                  return noti.UserRead.includes(masterId)
-                })
-                res.json({
-                  statusCode: 200,
-                  message: "Get data for master successfully",
-                  data: dataNoti,
-                  success: true,
-                })
-              }
-              )
-              .catch(() =>
-                res.status(404).json({
-                  success: false,
-                  message: `Can't find data.`,
-                })
-              );
-            break;
-        }
-
-      })
+    const idUser = req.params.id
+    NotificationDayOffSchema.find({})
+      .then(data => {
+        const dataNoti = data.filter(function (noti) {
+          return noti.UserRead.includes(idUser)
+        })
+        res.json({
+          statusCode: 200,
+          message: "Get data for master successfully",
+          data: dataNoti,
+          success: true,
+        })
+      }
+      )
+      .catch(() =>
+        res.status(404).json({
+          success: false,
+          message: `Can't find data.`,
+        })
+      );
 
   },
   update(req, res, next) {
@@ -102,7 +77,6 @@ export const NotificationController = {
   },
   upload(req, res) {
     const { body } = req
-    console.log('aaa', body)
     const idGroup = []
     const idMaster = []
     if (body?.Status === 4 || body?.Status === 3) {
@@ -179,6 +153,43 @@ export const NotificationController = {
           })
         );
     }
+  },
+  readAll(req, res) {
+    NotificationDayOffSchema.find({})
+      .then(data => {
+        const newData = data?.filter(function (noti) {
+          return noti.UserRead.includes(req.params.id)
+        })
+        newData?.map((data) => {
+          const arrayUserRead = data?.UserRead;
+          const newArrayUserRead = []
+          arrayUserRead?.map((e) => {
+            if (e !== req.params.id) {
+              newArrayUserRead.push(e)
+            }
+          })
+          NotificationDayOffSchema.updateOne({ _id: data?._id }, { UserRead: newArrayUserRead })
+            .then((noti) => {
+              console.log('A',noti)
+              if (newArrayUserRead?.length === 0) {
+                NotificationDayOffSchema.deleteOne({ _id: data?._id })
+              } else {
+              }
+            })
+        })
+        res.status(200).json({
+          statusCode: 200,
+          message: "Get data for master successfully",
+          data: data,
+          success: true,
+        })
+      })
+      .catch(() =>
+        res.status(404).json({
+          success: false,
+          message: `Can't find data.`,
+        })
+      );
   }
 }
 

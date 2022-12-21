@@ -29,7 +29,7 @@ router.post('/dayoff', DayOffController.show);
 router.post('/newdayoff', DayOffController.upload);
 router.delete('/dayoff/:id', DayOffController.delete);
 router.get('/dayoff/:id', DayOffController.showItem);
-router.get('/dayoff', DayOffController.get);
+router.get('/dayoff-user/:id', DayOffController.get);
 router.patch('/dayoff/:id', DayOffController.update);
 router.post('/approve', DayOffController.approve);
 router.post('/reject', DayOffController.reject);
@@ -40,12 +40,11 @@ router.get('/history/:id', HistoryController.get);
 router.post('/history', HistoryController.upload);
 router.post('/history-update', HistoryController.updateDayOff);
 
-
-
 router.get("/notification/:id", NotificationController.get);
 router.post("/delete-notification", NotificationController.update);
 router.post("/notification", NotificationController.upload);
 router.delete('/notification/:id', NotificationController.delete);
+router.post('/notification/:id', NotificationController.readAll);
 
 
 
