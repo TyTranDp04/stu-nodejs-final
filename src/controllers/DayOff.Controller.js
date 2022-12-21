@@ -18,7 +18,6 @@ export const DayOffController = {
       })
       .catch(next)
   },
-
   show(req, res) {
     const { UserId, RoleId, GroupId } = req.body
     const idGroup = []
