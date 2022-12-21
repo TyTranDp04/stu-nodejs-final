@@ -45,6 +45,7 @@ export const HistoryController = {
         const courses = new HistoryDayOffSchema(formData)
         courses.save()
       })
-  }
+  },
+  
 }
 

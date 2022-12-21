@@ -11,13 +11,13 @@ const LINK_URL_API = process.env.LINK_URL_API
 export const DayOffController = {
   // [GET]
   get(req, res, next) {
-    TableDayOffSchema.find({})
-      .then(user => {
-        res.json(user)
+    TableDayOffSchema.find({UserId: req.params.id})
+      .then(data => {
+        res.json(data)
       })
       .catch(next)
   },
-  
+
   show(req, res) {
     const { UserId, RoleId, GroupId } = req.body
     const idGroup = []
