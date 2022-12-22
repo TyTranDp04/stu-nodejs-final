@@ -3,8 +3,11 @@ import { TableDayOffSchema } from "../schemas/TableDayOff.Schemas.js"
 import { UserSchema } from "../schemas/User.schemas.js"
 import { UserGroupSchema } from "../schemas/UserGroup.schemas.js"
 import dotenv from 'dotenv'
+import { SlackBot } from "./SlackBot.services.js"
 dotenv.config()
 const LINK_URL_API = process.env.LINK_URL_API
+const LINK_URL_CHANNEL_DAYOFF = process.env.LINK_URL_CHANNEL_DAYOFF
+const LINK_URL_CHANNEL_HR = process.env.LINK_URL_CHANNEL_HR
 
 export const checkMaster = (UserId, req, Name, res) => {
   const idGroup = []
@@ -44,8 +47,9 @@ export const checkMaster = (UserId, req, Name, res) => {
                     data,
                   ]
                 }
-                axios.post(LINK_URL_API + '/notification', data)
                 axios.post(LINK_URL_API + '/history', formData)
+                SlackBot(LINK_URL_CHANNEL_DAYOFF, data)
+                SlackBot(LINK_URL_CHANNEL_HR, data)
                 res.status(200).json({
                   statusCode: 200,
                   message: "upload data successfully",
@@ -78,6 +82,8 @@ export const checkMaster = (UserId, req, Name, res) => {
                 }
                 axios.post(LINK_URL_API + '/notification', data)
                 axios.post(LINK_URL_API + '/history', formData)
+                SlackBot(LINK_URL_CHANNEL_DAYOFF, data)
+                SlackBot(LINK_URL_CHANNEL_HR, data)
                 res.status(200).json({
                   statusCode: 200,
                   message: "upload data successfully",
