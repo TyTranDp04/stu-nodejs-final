@@ -7,8 +7,6 @@ import axios from 'axios';
 dotenv.config()
 const LINK_URL_CHANNEL_DAYOFF = process.env.LINK_URL_CHANNEL_DAYOFF
 const LINK_URL_CHANNEL_HR = process.env.LINK_URL_CHANNEL_HR
-const LINK_URL_CHANNEL_GENERAL = process.env.LINK_URL_CHANNEL_GENERAL
-const LINK_URL_API = process.env.LINK_URL_API
 
 export const NotificationController = {
   get(req, res, next) {
@@ -133,9 +131,10 @@ export const NotificationController = {
               const coursesNoti = new NotificationDayOffSchema(fromData)
               coursesNoti.save()
                 .then((data) => {
-                  // SlackBot(LINK_URL_CHANNEL_DAYOFF,body)
-                  // SlackBot(LINK_URL_CHANNEL_HR,body)
-                  // SlackBot(LINK_URL_CHANNEL_GENERAL,body)
+                  if (body?.Status === 1) {
+                    SlackBot(LINK_URL_CHANNEL_DAYOFF, body)
+                    SlackBot(LINK_URL_CHANNEL_HR, body)
+                  }
                   res.status(200).json({
                     statusCode: 200,
                     message: "Notification Slack successfully",
@@ -170,7 +169,7 @@ export const NotificationController = {
           })
           NotificationDayOffSchema.updateOne({ _id: data?._id }, { UserRead: newArrayUserRead })
             .then((noti) => {
-              console.log('A',noti)
+              console.log('A', noti)
               if (newArrayUserRead?.length === 0) {
                 NotificationDayOffSchema.deleteOne({ _id: data?._id })
               } else {
