@@ -10,10 +10,11 @@ import {UserGroupController} from '../controllers/UserGroup.controllers.js'
 import { NotificationController } from "../controllers/Notification.controller.js";
 import { GoogleSheetController } from "../controllers/GoogleSheet.controller.js";
 import multer from "multer";
+import { HistoryController } from "../controllers/History.controller.js";
 
 const router = express.Router();
 
-router.get("/user/:id", UserController.getone);
+router.get("/user-getone/:id", UserController.getone);
 router.post("/user", upload.single("Avatar"), UserController.create);
 router.post("/user/:id", upload.single("img"), UserController.updateProfile);
 router.get("/user", UserController.get);
@@ -22,24 +23,29 @@ router.patch("/user/:id", multer().none(), UserController.update);
 router.delete("/user/:id", UserController.getDelete);
 router.get("/user-item/:id",UserController.showItem);
 router.get("/user/:key",UserController.searchUser);
+router.delete("/user-group/:id", UserController.DeleteGroupuser);
 
 
 router.post('/dayoff', DayOffController.show);
 router.post('/newdayoff', DayOffController.upload);
-router.post('/dayoff-soft', DayOffController.getDeleted);
-router.delete('/dayoff-soft/:id', DayOffController.softDelete);
-router.patch('/dayoff-soft/:id', DayOffController.restore);
 router.delete('/dayoff/:id', DayOffController.delete);
 router.get('/dayoff/:id', DayOffController.showItem);
-router.get('/dayoff', DayOffController.get);
+router.get('/dayoff-user/:id', DayOffController.get);
 router.patch('/dayoff/:id', DayOffController.update);
 router.post('/approve', DayOffController.approve);
 router.post('/reject', DayOffController.reject);
+router.post('/request-change', DayOffController.requestChange);
+router.post('/revert', DayOffController.revert);
+
+router.get('/history/:id', HistoryController.get);
+router.post('/history', HistoryController.upload);
+router.post('/history-update', HistoryController.updateDayOff);
 
 router.get("/notification/:id", NotificationController.get);
 router.post("/delete-notification", NotificationController.update);
 router.post("/notification", NotificationController.upload);
 router.delete('/notification/:id', NotificationController.delete);
+router.post('/notification/:id', NotificationController.readAll);
 
 
 

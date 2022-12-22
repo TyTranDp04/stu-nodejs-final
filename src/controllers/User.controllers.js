@@ -1,5 +1,6 @@
 import { UserSchema } from "../schemas/User.schemas.js"
 import { that } from "../middlewares/Upload.model.js"
+import { UserGroupSchema } from "../schemas/UserGroup.schemas.js";
 
 export const UserController = {
   searchUser: async (req, res) => {
@@ -32,8 +33,8 @@ export const UserController = {
     const data = {
       ...body,
       Password: "123456",
-      Avatar:
-        "https://vnn-imgs-a1.vgcloud.vn/image1.ictnews.vn/_Files/2020/03/17/trend-avatar-1.jpg",
+      Avatar: null
+        // "https://vnn-imgs-a1.vgcloud.vn/image1.ictnews.vn/_Files/2020/03/17/trend-avatar-1.jpg",
 
     };
     const courses = new UserSchema(data);
@@ -49,6 +50,18 @@ export const UserController = {
       })
       .catch(next);
   },
+  DeleteGroupuser(req, res, next) {
+    UserSchema.deleteOne({ _id: req.params.id })
+    .then((course) => {
+      UserGroupSchema.deleteMany({ UserId: req.params.id })
+      .then((course) => {
+        res.json("ok ");
+      })
+      .catch(next); 
+    })
+    .catch(next);
+  },
+
   showItem(req, res, next) {
     UserSchema.findByIdAndUpdate({ _id: req.params.id })
       .then((data) =>
