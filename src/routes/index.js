@@ -1,5 +1,5 @@
 import express from "express";
-import { DayOffController } from "../controllers/DayOff.controller.js";
+import { DayOffController } from "../controllers/DayOff.Controller.js";
 import { UserController } from "../controllers/User.controllers.js";
 import { upload } from "../middlewares/MulterMiddleWare.js";
 import { DpRoleController } from "../controllers/Role.controllers.js"; 
