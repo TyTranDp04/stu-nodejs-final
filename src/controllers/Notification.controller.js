@@ -3,7 +3,6 @@ import { UserGroupSchema } from '../schemas/UserGroup.schemas.js';
 import { UserSchema } from '../schemas/User.schemas.js';
 import dotenv from 'dotenv'
 import { SlackBot } from '../services/SlackBot.services.js'
-import axios from 'axios';
 dotenv.config()
 const LINK_URL_CHANNEL_DAYOFF = process.env.LINK_URL_CHANNEL_DAYOFF
 const LINK_URL_CHANNEL_HR = process.env.LINK_URL_CHANNEL_HR
