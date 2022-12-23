@@ -22,7 +22,11 @@ export const HistoryController = {
   },
   upload(req, res) {
     const { body } = req
-    const courses = new HistoryDayOffSchema(body)
+    const formData = {
+      ...body,
+      UserId: body?.UserActionId
+    }
+    const courses = new HistoryDayOffSchema(formData)
     courses.save()
   },
   updateDayOff(req, res) {
@@ -40,6 +44,7 @@ export const HistoryController = {
         ]
         const formData = {
           ...body,
+          UserId: body?.UserActionId,
           Parent: newDataParent,
         }
         const courses = new HistoryDayOffSchema(formData)
