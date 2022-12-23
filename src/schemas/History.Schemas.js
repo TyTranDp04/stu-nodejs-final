@@ -5,7 +5,7 @@ mongoose.Promise = global.Promise;
 const HistoryDayOff = new Schema({
   RequestId: { type: String, require: true,
   },
-  UserActionId: { type: String, require: true,
+  UserId: { type: String, require: true,
   },
   Status: { type: Object, require: true,
   },
