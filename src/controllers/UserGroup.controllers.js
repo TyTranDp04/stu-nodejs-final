@@ -1,5 +1,9 @@
 import { UserSchema } from "../schemas/User.schemas.js";
 import { UserGroupSchema } from "../schemas/UserGroup.schemas.js";
+import dotenv from 'dotenv'
+dotenv.config()
+const LINK_URL_API = process.env.LINK_URL_API
+import axios from 'axios';
 
 export const UserGroupController = {
   get(req, res, next) {
@@ -100,6 +104,12 @@ export const UserGroupController = {
     const courses = new UserGroupSchema(form)
     courses.save()
       .then(() => {
+        const formNoti = {
+          Status: 6,
+          UserId: body?._id,
+          GroupId: body?.GroupIdAdd,
+        }
+        axios.post(LINK_URL_API + '/notification', formNoti)
         const IdGroup = body?.GroupId
         IdGroup.push(body?.GroupIdAdd)
         UserSchema.updateOne({ _id: body?._id }, { GroupId: IdGroup })

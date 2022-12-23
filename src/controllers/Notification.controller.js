@@ -9,6 +9,7 @@ const LINK_URL_CHANNEL_HR = process.env.LINK_URL_CHANNEL_HR
 
 export const NotificationController = {
   get(req, res, next) {
+    console.log(req.params.id)
     const idUser = req.params.id
     NotificationDayOffSchema.find({})
       .then(data => {
@@ -76,7 +77,7 @@ export const NotificationController = {
     const { body } = req
     const idGroup = []
     const idMaster = []
-    if (body?.Status === 4 || body?.Status === 3) {
+    if (body?.Status === 4 || body?.Status === 3 || body?.Status === 6) {
       const fromData = {
         ...body,
         UserRead: body?.UserId
