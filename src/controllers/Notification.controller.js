@@ -77,7 +77,7 @@ export const NotificationController = {
     const { body } = req
     const idGroup = []
     const idMaster = []
-    if (body?.Status === 4 || body?.Status === 3 || body?.Status === 6) {
+    if (body?.Status !== 1) {
       const fromData = {
         ...body,
         UserRead: body?.UserId
@@ -85,6 +85,10 @@ export const NotificationController = {
       const coursesNoti = new NotificationDayOffSchema(fromData)
       coursesNoti.save()
         .then((data) => {
+          if (body?.Status === 2 || body?.Status === 3) {
+            SlackBot(LINK_URL_CHANNEL_DAYOFF, body)
+            SlackBot(LINK_URL_CHANNEL_HR, body)
+          }
           res.status(200).json({
             statusCode: 200,
             message: "Notification Slack successfully",

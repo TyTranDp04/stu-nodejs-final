@@ -10,7 +10,7 @@ const TableDayOff = new Schema({
   Reason: { type: String },
   Approve: { type: Array },
   Name: { type: String },
-  Time: { type: String },
+  Time: { type: Number },
   Quantity: { type: Number},
   Type: { type: Number },
 }, { timestamps: true });

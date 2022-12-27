@@ -294,7 +294,13 @@ export const DayOffController = {
                   );
                   if (idAprove.length === idMaster.length) {
                     TableDayOffSchema.updateOne({ _id: RequestId }, { Status: 2 })
-                      .then((data) => {
+                      .then(() => {
+                        const formNoti = {
+                         ...data?._doc,
+                         Status: 2,
+                        
+                        }
+                        axios.post(LINK_URL_API + '/notification', formNoti)
                       })
                       .catch((error) => {
                       })
