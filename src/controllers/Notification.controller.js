@@ -9,7 +9,6 @@ const LINK_URL_CHANNEL_HR = process.env.LINK_URL_CHANNEL_HR
 
 export const NotificationController = {
   get(req, res, next) {
-    console.log(req.params.id)
     const idUser = req.params.id
     NotificationDayOffSchema.find({})
       .then(data => {
@@ -173,7 +172,6 @@ export const NotificationController = {
           })
           NotificationDayOffSchema.updateOne({ _id: data?._id }, { UserRead: newArrayUserRead })
             .then((noti) => {
-              console.log('A', noti)
               if (newArrayUserRead?.length === 0) {
                 NotificationDayOffSchema.deleteOne({ _id: data?._id })
               } else {

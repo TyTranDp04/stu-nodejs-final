@@ -47,7 +47,6 @@ export const GroupController = {
       );
   },
   delete(req, res, next) {
-    console.log(req.params.id)
     UserGroupSchema.deleteMany({ GroupId: req.params.id })
       .then(() => { })
     GroupSchema.deleteOne({ _id: req.params.id })
@@ -65,7 +64,6 @@ export const GroupController = {
             UserSchema.updateOne({ _id: e._id }, { GroupId: GroupIdArray })
               .then(() => {
               })
-            console.log(GroupIdArray)
           }
         })
         res.status(200).json({

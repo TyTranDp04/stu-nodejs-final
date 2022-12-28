@@ -42,7 +42,6 @@ export const UserGroupController = {
   },
   delete(req, res, next) {
     const { UserId, GroupId } = req.body
-    console.log(UserId, GroupId)
     UserGroupSchema.find({ GroupId: GroupId })
       .then(course => {
         course?.map((e) => {
@@ -57,7 +56,6 @@ export const UserGroupController = {
                         GroupIdArray.push(e)
                       }
                     })
-                    console.log(GroupIdArray)
                     UserSchema.updateOne({ _id: UserId }, { GroupId: GroupIdArray })
                       .then(() => {
                         res.status(200).json({
