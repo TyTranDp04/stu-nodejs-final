@@ -17,7 +17,21 @@ export const UserController = {
   get(req, res, next) {
     UserSchema.find({})
       .then((user) => {
-        res.json(user);
+        const configUser = user.map(item => ({
+          _id: item?._id,
+          RoleId: item?.RoleId,
+          Avatar: item?.Avatar,
+          Name: item?.Name,
+          GroupId: item?.GroupId,
+          Gmail: item?.Gmail,
+          Address: item?.Address,
+          Phone: item?.Phone,
+          isDeleted: item?.isDeleted,
+          deleteAt: item?.deleteAt,
+          createdAt: item?.createdAt,
+          updateAt: item?.updateAt,
+        }))
+        res.json(configUser);
       })
       .catch(next);
   },
@@ -98,7 +112,7 @@ export const UserController = {
     }
   },
   updateProfile(req, res, next) {
-    const { file, body } = req
+    const { file, body } = req    
     if (file) {
       that.uploadFileDriver({ shared: true }, file)
         .then(result => {
@@ -106,7 +120,6 @@ export const UserController = {
             ...body,
             Avatar: result?.data?.webContentLink
           }
-
           UserSchema.updateOne({ _id: req.params.id }, formData)
             .then((response) => {
               res.json(formData)
