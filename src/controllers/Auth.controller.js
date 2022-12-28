@@ -73,7 +73,6 @@ export const authController = {
 
   update(request, response) {
     const id = request.params;
-    // console.log("abc :" , request.body);
     const updateObj = request.body;
     ChangePasswordService.update({ _id: id }, { $set: updateObj })
       .then((data) => {

@@ -11,7 +11,6 @@ export const DpRoleController = {
       .catch(next);
   },
   create(request, response) {
-    console.log(request.body);
     DpRoleService.create({
       Id: request.body.Id,
       RoleName: request.body.RoleName,

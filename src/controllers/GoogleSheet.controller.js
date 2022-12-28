@@ -101,9 +101,8 @@ export const GoogleSheetController = {
         item?.Type === 1 ? "OFF" : "WFH",
         item?.Time,
         item?.Quantity,
-        item.Status = "Approve",
       ]);
-      const hearderRow = ["No", "Name", "Reason", "DayOffFrom", "DayOffTo", "Type", "Time", "Quantity", "Status"];
+      const hearderRow = ["No", "Name", "Reason", "DayOffFrom", "DayOffTo", "Type", "Time", "Quantity"];
       const values = [[...hearderRow], ...mapDayOff];
       await googleSheets.spreadsheets.values.clear({
         auth,
@@ -158,7 +157,6 @@ export const GoogleSheetController = {
         Type: item?.Type,
         Time: item?.Time,
         Quantity: item?.Quantity,
-        Status: "Approve",
       }));
 
       res.status(200).json(values)
